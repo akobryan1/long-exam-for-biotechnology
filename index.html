@@ -277,7 +277,8 @@
     const EXAM_DURATION_SECONDS = 60 * 60;            // 1 hour
     // Set the end date/time of the exam (local time). CHANGE this.
     // Example: new Date("2025-11-21T00:00:00");
-    const EXAM_END = null; // set to a Date object to enforce closing, or keep null
+    const EXAM_END = new Date("2025-11-21T00:00:00");
+
 
     // Sync page title + heading with course name
     document.title = COURSE_NAME + " Final Exam";
@@ -1187,3 +1188,4 @@
 </script>
 </body>
 </html>
+
