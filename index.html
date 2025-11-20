@@ -1,507 +1,1189 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>100-Item Long Quiz</title>
-<style>
-  @media (max-width: 600px) {
-    body { font-size: 15px; }
-    .wrap { padding: 16px; }
-    .qtext { font-size: 16px; }
-    .choice { padding: 10px; }
-    button { width: 100%; } /* easier tap area */
-    .footer { flex-direction: column; align-items: stretch; }
-  }
-
-  :root{
-    --bg:#0f172a; --card:#111827; --muted:#64748b; --text:#e5e7eb; --accent:#22c55e; --warn:#f59e0b; --bad:#ef4444; --good:#10b981;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;background:linear-gradient(180deg,#0b1022,#0f172a);color:var(--text)}
-  .wrap{max-width:960px;margin:0 auto;padding:24px}
-  .card{background:linear-gradient(180deg,#0b1220,#0d1426);border:1px solid #1f2937;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-  header{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:16px 20px;border-bottom:1px solid #1f2937}
-  header .meta{display:flex;gap:16px;flex-wrap:wrap}
-  .pill{padding:6px 10px;border-radius:999px;background:#111827;color:#cbd5e1;border:1px solid #1f2937;font-size:12px}
-  .content{padding:20px}
-  h1{margin:0;font-size:18px;color:#e2e8f0}
-  h2{margin:0 0 8px 0;font-size:16px;color:#e2e8f0}
-  .name-stage, .quiz-stage, .result-stage{display:none}
-  .active{display:block}
-  .field{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
-  input[type="text"]{padding:12px 14px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e5e7eb;flex:1;min-width:260px}
-  button{padding:12px 16px;border:1px solid #263042;border-radius:12px;background:#0b1326;color:#e5e7eb;cursor:pointer}
-  button.primary{background:linear-gradient(180deg,#126d3a,#0d5a30);border-color:#144b2e}
-  button:hover{filter:brightness(1.08)}
-  .qtext{font-size:18px;line-height:1.5;margin-bottom:16px}
-  .choices{display:grid;gap:10px}
-  .choice{display:flex;gap:10px;align-items:flex-start;background:#0b1220;border:1px solid #1f2937;border-radius:12px;padding:12px}
-  .choice input{margin-top:3px}
-  .footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px}
-  .progress{height:8px;background:#0f172a;border:1px solid #1f2937;border-radius:999px;overflow:hidden}
-  .bar{height:100%;background:linear-gradient(90deg,#22c55e,#16a34a)}
-  .toast{position:fixed;right:18px;bottom:max(18px, env(safe-area-inset-bottom));background:#111827;border:1px solid #334155;border-radius:12px;padding:12px 14px;color:#e5e7eb;opacity:0;transform:translateY(8px);transition:.25s;z-index:9999}
-  .toast.show{opacity:1;transform:translateY(0)}
-  .muted{color:#94a3b8}
-  .small{font-size:12px}
-  code.inline{background:#0b1220;border:1px solid #1f2937;border-radius:6px;padding:2px 6px}
-</style>
+    <meta charset="UTF-8" />
+    <!-- Course name is set by JavaScript so it stays in sync with Firestore -->
+    <title>Loading Final Exam...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        :root {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color-scheme: dark;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #050816;
+            color: #f5f5f5;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 24px;
+            background: radial-gradient(circle at top left,
+                rgba(255,255,255,0.06) 0,
+                rgba(255,255,255,0.02) 40%,
+                rgba(0,0,0,0.8) 70%);
+            border-radius: 18px;
+            padding: 24px 28px 28px;
+            box-shadow: 0 18px 45px rgba(0,0,0,0.55);
+        }
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .btn {
+            border-radius: 999px;
+            border: none;
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            background: linear-gradient(135deg, #6366f1, #22c55e);
+            color: #ffffff;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.2s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .btn.secondary {
+            background: rgba(148,163,184,0.15);
+            border: 1px solid rgba(148,163,184,0.6);
+            box-shadow: none;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .btn-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn-row.right {
+            justify-content: flex-end;
+        }
+        .field-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            color: #e5e7eb;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 9px 11px;
+            border-radius: 12px;
+            border: 1px solid rgba(148,163,184,0.7);
+            background: rgba(15,23,42,0.7);
+            color: #f9fafb;
+            outline: none;
+        }
+        input[type="text"]:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 1px rgba(99,102,241,0.5);
+        }
+        .instructions-list {
+            margin-top: 8px;
+            padding-left: 20px;
+            font-size: 0.95rem;
+        }
+        .meta-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 18px;
+            font-size: 0.9rem;
+            color: #cbd5f5;
+        }
+        .pill {
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(15,23,42,0.8);
+            border: 1px solid rgba(148,163,184,0.7);
+        }
+        .question-text {
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        .options {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .options li {
+            margin-bottom: 8px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            background: rgba(15,23,42,0.7);
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .options li.selected {
+            border-color: #6366f1;
+            background: radial-gradient(circle at top left,
+                rgba(99,102,241,0.35) 0,
+                rgba(15,23,42,0.9) 45%);
+        }
+        .options input[type="radio"] {
+            cursor: pointer;
+        }
+        .message {
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: #f97373;
+        }
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: rgba(15,23,42,0.95);
+            border: 1px solid rgba(148,163,184,0.8);
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            color: #e5e7eb;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.7);
+            max-width: 320px;
+            z-index: 50;
+        }
+        .toast strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        .toast.success {
+            border-color: #22c55e;
+        }
+        .toast.error {
+            border-color: #f97373;
+        }
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.92);
+            color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            z-index: 100;
+        }
+        .overlay-box {
+            max-width: 480px;
+            background: rgba(15,23,42,0.98);
+            padding: 20px 22px 22px;
+            border-radius: 18px;
+            border: 1px solid rgba(148,163,184,0.7);
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="card">
-    <header>
-      <h1>100-Item Long Quiz</h1>
-      <div class="meta">
-        <span class="pill" id="who">Name: —</span>
-        <span class="pill" id="sectionPill">Section: —</span>
-        <span class="pill" id="timer">Time: 60:00</span>
-        <span class="pill" id="counter">Q: — / 100</span>
-        <span class="pill" id="penalties">Tab switches: 0</span>
-        <span class="pill" id="deduct">Penalty: 0</span>
-      </div>
-    </header>
-    <div class="content">
-      <!-- Stage: Name -->
-      <section class="name-stage active" id="stageName">
-        <h2>Enter your information to begin</h2>
-        <div class="field">
-          <input type="text" id="studentName" placeholder="Full name (e.g., Juan Dela Cruz)" />
-          <input type="text" id="studentSection" placeholder="Year and Section (e.g., BS Agri 2A)" />
-          <button class="primary" id="btnStart">Start Quiz</button>
+<div class="container">
+    <!-- STEP 0: Instructions -->
+    <section id="introScreen">
+        <h1 id="courseHeading">Final Exam</h1>
+        <p>Please carefully read the instructions before starting your exam:</p>
+        <ul class="instructions-list">
+            <li>The exam is <strong>screen recorded</strong>.</li>
+            <li>The time limit is <strong>1 hour</strong>.</li>
+            <li>You may take the exam <strong>twice</strong>. After the second take, all attempts will be blocked.</li>
+            <li>At <strong>12 midnight</strong>, the link will be closed.</li>
+        </ul>
+        <p style="font-size:0.9rem;color:#cbd5f5;margin-top:10px;">
+            By clicking <strong>"I understand"</strong>, you agree to the exam rules above.
+        </p>
+        <div class="btn-row right">
+            <button id="understandBtn" class="btn">I understand</button>
         </div>
-        <p class="muted small">Once you start, you’ll have <b>1 hour</b>. Questions are randomized. Switching tabs deducts <b>10 points</b> each time.</p>
-      </section>
+        <div id="introMessage" class="message"></div>
+    </section>
 
-      <!-- Stage: Quiz -->
-      <section class="quiz-stage" id="stageQuiz">
-        <div class="progress" aria-hidden="true"><div class="bar" id="bar" style="width:0%"></div></div>
-        <p class="qtext" id="qtext"></p>
-        <div class="choices" id="choices"></div>
-        <div class="footer">
-          <button id="btnPrev">Review</button>
-          <div>
-            <button id="btnNext" class="primary">Next</button>
-          </div>
+    <!-- STEP 1: Student Info -->
+    <section id="studentInfoScreen" class="hidden">
+        <h2>Student Information</h2>
+        <div class="field-group">
+            <label for="studentName">Name</label>
+            <input type="text" id="studentName" placeholder="e.g. Juan Dela Cruz" />
         </div>
-      </section>
+        <div class="field-group">
+            <label for="studentSection">Year and Section</label>
+            <input type="text" id="studentSection" placeholder="e.g. BS Agri 2A" />
+        </div>
+        <div class="btn-row">
+            <button id="backToIntroBtn" class="btn secondary">Back</button>
+            <button id="toExamBtn" class="btn">Next</button>
+        </div>
+        <div id="studentInfoMessage" class="message"></div>
+    </section>
 
-      <!-- Stage: Results -->
-      <section class="result-stage" id="stageResult">
-        <h2>Submission Complete ✅</h2>
-        <p><b id="resName"></b> (<span id="resSection"></span>), here are your results:</p>
-        <p>Raw Score: <b id="resRaw"></b> / 100<br>
-           Penalties (tab switches × 10): <b id="resPenalty"></b><br>
-           Final Score: <b id="resFinal"></b> / 100</p>
-        <p class="muted small">Your answers have been recorded. Please wait for your instructor’s feedback.</p>
-      </section>
-    </div>
-  </div>
+    <!-- STEP 2: Exam Screen -->
+    <section id="examScreen" class="hidden">
+        <div class="meta-bar">
+            <div class="pill" id="studentMeta"></div>
+            <div class="pill" id="timerDisplay">Time remaining: 60:00</div>
+            <div class="pill" id="questionCounter">Question 1 / 50</div>
+        </div>
+
+        <div id="questionBlock">
+            <div class="question-text" id="questionText"></div>
+            <ul class="options" id="optionsList"></ul>
+        </div>
+
+        <div class="btn-row">
+            <button id="prevQuestionBtn" class="btn secondary">Review previous</button>
+            <button id="nextQuestionBtn" class="btn">Next</button>
+            <button id="submitExamBtn" class="btn hidden">Submit</button>
+        </div>
+        <div id="examMessage" class="message"></div>
+    </section>
 </div>
 
-<div class="toast" id="toast">Please choose an answer before proceeding.</div>
+<!-- Overlay for "exam closed" -->
+<div id="closedOverlay" class="overlay hidden">
+    <div class="overlay-box">
+        <h2>Exam Closed</h2>
+        <p id="closedMessage">
+            This exam is no longer available. Please contact your instructor if you think this is a mistake.
+        </p>
+    </div>
+</div>
 
-<!-- Firebase (v10 modules) -->
+<!-- Toast notification -->
+<div id="toast" class="toast hidden"></div>
+
 <script type="module">
-  /* ==========================
-     🔧 FIREBASE SETUP
-     - Enable Firestore
-     - Enable Anonymous Auth (Console → Authentication)
-  ========================== */
-  const firebaseConfig = {
-    apiKey: "AIzaSyB-idZOq8h9sVttNdzXE2t8FMoYI_snq7g",
-    authDomain: "kuya-quiz-100.firebaseapp.com",
-    projectId: "kuya-quiz-100",
-    storageBucket: "kuya-quiz-100.appspot.com",
-    messagingSenderId: "74623975270",
-    appId: "1:74623975270:web:dec2b21dbee017292952a7"
-  };
+    /*********************************************************
+     *  CONFIGURATION
+     *********************************************************/
+    const COURSE_NAME = "Agricultural Biotechnology"; // ← change as needed
+    const EXAM_DURATION_SECONDS = 60 * 60;            // 1 hour
+    // Set the end date/time of the exam (local time). CHANGE this.
+    // Example: new Date("2025-11-21T00:00:00");
+    const EXAM_END = null; // set to a Date object to enforce closing, or keep null
 
-  const canInitFirebase = Object.values(firebaseConfig).every(v => typeof v === 'string' && !v.includes('REPLACE_ME'));
+    // Sync page title + heading with course name
+    document.title = COURSE_NAME + " Final Exam";
+    document.getElementById("courseHeading").innerText = COURSE_NAME + " Final Exam";
 
-  let app, db, addDoc, collection, serverTimestamp, getAuth, signInAnonymously, auth;
-  if (canInitFirebase) {
-    const firebase = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-    const firestore = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    const authmod   = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-    app = firebase.initializeApp(firebaseConfig);
-    db  = firestore.getFirestore(app);
-    addDoc = firestore.addDoc;
-    collection = firestore.collection;
-    serverTimestamp = firestore.serverTimestamp;
-    getAuth = authmod.getAuth;
-    signInAnonymously = authmod.signInAnonymously;
-    auth = getAuth(app);
-  }
+    /*********************************************************
+     *  FIREBASE INITIALIZATION (FILL IN YOUR CONFIG)
+     *********************************************************/
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+        query,
+        where,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  /* ==========================
-     QUESTIONS + ANSWER KEY
-     (Original order preserved in `id`)
-  ========================== */
-  const QUESTIONS = [
-    {id:1,q:"What does the term Genetically Modified Organism (GMO) refer to?",A:"An organism bred through traditional crossbreeding",B:"An organism with a naturally occurring genetic mutation",C:"An organism whose genetic material has been altered using biotechnology",D:"An organism created through natural selection",ans:"C"},
-    {id:2,q:"Which of the following techniques is commonly used to produce GMOs?",A:"Cloning by mitosis",B:"Recombinant DNA technology",C:"Selective breeding",D:"Spontaneous mutation",ans:"B"},
-    {id:3,q:"The main goal of creating genetically modified crops is to:",A:"Make them look more colorful",B:"Improve yield, resistance, and nutritional value",C:"Reduce their lifespan",D:"Eliminate all natural traits",ans:"B"},
-    {id:4,q:"Which of the following best defines transgenic organisms?",A:"Organisms with duplicated chromosomes",B:"Organisms with artificially induced mutations",C:"Organisms that carry genes from another species",D:"Organisms that evolved faster than others",ans:"C"},
-    {id:5,q:"The gene inserted into Bt corn comes from:",A:"A virus",B:"Another corn variety",C:"A bacterium (Bacillus thuringiensis)",D:"A fungus",ans:"C"},
-    {id:6,q:"Which of the following is a direct impact of GMOs on food quantity?",A:"Increased food prices",B:"Higher crop yield per hectare",C:"Reduced farm labor",D:"Slower maturity rate",ans:"B"},
-    {id:7,q:"A major benefit of GM crops for farmers is:",A:"The ability to use fewer pesticides",B:"Reduced need for chemical pesticides",C:"Greater dependence on herbicides",D:"Inability to replant seeds",ans:"B"},
-    {id:8,q:"Which GMO crop was designed to produce higher Vitamin A content?",A:"Bt cotton",B:"StarLink corn",C:"Golden Rice",D:"Roundup Ready soybean",ans:"C"},
-    {id:9,q:"What is the most common concern about the environmental impact of GMOs?",A:"They improve soil fertility",B:"They help biodiversity",C:"They may harm non-target organisms and biodiversity",D:"They reduce water pollution",ans:"C"},
-    {id:10,q:"How can GMOs impact human health positively?",A:"By increasing the amount of fat in food",B:"By causing allergies",C:"By enhancing the nutritional quality of food",D:"By reducing taste",ans:"C"},
-    {id:11,q:"A potential negative health effect of GMOs is:",A:"Improved immunity",B:"Allergenic reactions in sensitive individuals",C:"Increased metabolism",D:"Longer lifespan",ans:"B"},
-    {id:12,q:"The StarLink corn controversy involved which main issue?",A:"Low yield",B:"Drought resistance",C:"Allergenicity in human food supply",D:"Pest control failure",ans:"C"},
-    {id:13,q:"The Monarch butterfly controversy was primarily about:",A:"Bt corn killing all butterflies directly",B:"Potential harm to Monarch larvae feeding on milkweed near Bt corn fields",C:"Cross-pollination increasing butterfly numbers",D:"Loss of butterfly colors",ans:"B"},
-    {id:14,q:"Which controversy involved a genetically modified potato found to have harmful effects in rats?",A:"Monarch butterfly controversy",B:"Poisonous potato controversy",C:"StarLink corn controversy",D:"Mexican corn gene escape controversy",ans:"B"},
-    {id:15,q:"The Mexican corn gene escape controversy refers to:",A:"Pollen from GM corn mixing with native varieties",B:"Genetic contamination of native maize varieties in Mexico",C:"Bt corn becoming invasive",D:"Corn spreading to Asia",ans:"B"},
-    {id:16,q:"Banning or moratoriums on GMOs are usually based on:",A:"High production costs",B:"Uncertainty about health and environmental safety",C:"Low farmer interest",D:"Lack of government funding",ans:"B"},
-    {id:17,q:"Labeling laws for GM foods exist mainly to:",A:"Discourage consumers from buying GMOs",B:"Help farmers manage crops",C:"Allow consumers to make informed choices",D:"Control prices",ans:"C"},
-    {id:18,q:"Intellectual property issues in biotechnology often involve:",A:"The right to free seeds",B:"The ownership of farmlands",C:"Patenting of genes and modified organisms",D:"Fertilizer costs",ans:"C"},
-    {id:19,q:"Germline therapy differs from somatic therapy because:",A:"It treats only adults",B:"It affects only one tissue",C:"It alters heritable DNA changes in reproductive cells",D:"It uses only chemical drugs",ans:"C"},
-    {id:20,q:"Gene therapy primarily aims to:",A:"Replace faulty genes to cure diseases",B:"Correct or replace defective genes",C:"Clone patients",D:"Create superhumans",ans:"B"},
-    {id:21,q:"One ethical concern about gene therapy is:",A:"It might reduce mutation rates",B:"It may increase biodiversity",C:"It could be used for enhancement, not just treatment",D:"It has no risks",ans:"C"},
-    {id:22,q:"Which of the following best describes cloning?",A:"Reproduction through random mutation",B:"Mixing genes from different species",C:"Producing genetically identical copies of an organism",D:"Artificial selection",ans:"C"},
-    {id:23,q:"What was Dolly the sheep a milestone for?",A:"Gene editing in crops",B:"Stem cell research",C:"First successful cloning of an adult mammal",D:"Transgenic animal patenting",ans:"C"},
-    {id:24,q:"In the Philippines, BioN is known for:",A:"Producing fertilizers",B:"A government-funded biotechnology program for research and product development",C:"A multinational seed company",D:"A pesticide initiative",ans:"B"},
-    {id:25,q:"Agrivam and EM vs. IMO in the Philippines relate to:",A:"Crop rotation methods",B:"Plant breeding programs",C:"Local biotechnology and microbial inoculants used in agriculture",D:"Vaccine manufacturing",ans:"C"},
-    {id:26,q:"Which international agreement regulates the transboundary movement of living modified organisms (LMOs)?",A:"Montreal Protocol",B:"Cartagena Protocol on Biosafety",C:"Kyoto Protocol",D:"Rio Declaration",ans:"B"},
-    {id:27,q:"Which organization provides global guidelines for the labeling of GM food products?",A:"World Health Organization (WHO)",B:"Codex Alimentarius Commission",C:"World Trade Organization (WTO)",D:"International Seed Federation",ans:"B"},
-    {id:28,q:"The economic advantage of planting GM crops for farmers is primarily due to:",A:"Increased dependence on seed companies",B:"Reduced government control",C:"Decreased pesticide and herbicide costs",D:"Elimination of weeds",ans:"C"},
-    {id:29,q:"Critics argue that patenting genetically modified seeds:",A:"Encourages biodiversity",B:"Reduces consumer awareness",C:"Limits farmers’ rights to save and reuse seeds",D:"Makes farming more sustainable",ans:"C"},
-    {id:30,q:"What is a key environmental risk of GMOs spreading beyond intended areas?",A:"Genetic drift",B:"Seed storage",C:"Gene flow to wild relatives",D:"Artificial selection",ans:"C"},
-    {id:31,q:"Which best describes a terminator gene in biotechnology?",A:"A gene that increases plant resistance",B:"A gene that replicates faster than normal",C:"A gene designed to prevent plants from producing viable seeds",D:"A gene that causes mutation",ans:"C"},
-    {id:32,q:"Which of the following is not a potential benefit of GM foods?",A:"Longer shelf life",B:"Enhanced nutritional content",C:"Spontaneous pest mutations",D:"Drought resistance",ans:"C"},
-    {id:33,q:"The main concern with herbicide-tolerant GM crops is that:",A:"They reduce herbicide use completely",B:"They may promote the evolution of “superweeds”",C:"They improve soil fertility",D:"They are unable to survive in the wild",ans:"B"},
-    {id:34,q:"Which gene-editing technology allows for precise modification of DNA without introducing foreign genes?",A:"RNA interference",B:"CRISPR-Cas9",C:"Somatic hybridization",D:"Gene cloning",ans:"B"},
-    {id:35,q:"Which of the following best represents a societal issue regarding GMOs?",A:"Gene flow",B:"Mutation rate",C:"Consumer acceptance and trust",D:"Soil degradation",ans:"C"},
-    {id:36,q:"The precautionary principle in biotechnology means:",A:"Approving all GMOs unless proven harmful",B:"Allowing open trials without review",C:"Acting to prevent potential harm even without full scientific certainty",D:"Releasing GMOs after one successful trial",ans:"C"},
-    {id:37,q:"Which best explains the “gene escape” problem?",A:"GM crops cannot reproduce",B:"Transgenes spread unintentionally to non-GM plants",C:"Seeds fail to germinate in the soil",D:"Farmers illegally plant GM seeds",ans:"B"},
-    {id:38,q:"The major ethical issue in germline modification is that:",A:"It can’t be done in animals",B:"The changes are heritable and affect future generations",C:"It only treats visible traits",D:"It cannot be reversed",ans:"B"},
-    {id:39,q:"A major difference between gene therapy and genetic enhancement is:",A:"Therapy focuses on correcting disease, enhancement aims at improving normal traits",B:"Therapy is heritable; enhancement is not",C:"Enhancement fixes genetic disorders",D:"Therapy uses cloning technology",ans:"A"},
-    {id:40,q:"The StarLink corn controversy emphasized what regulatory weakness?",A:"Overuse of herbicides",B:"Lack of separation between human and animal food chains",C:"Poor labeling in consumer markets",D:"Inefficient crop monitoring",ans:"B"},
-    {id:41,q:"Which of the following was an outcome of the Monarch butterfly controversy?",A:"Bt corn was banned globally",B:"Milkweed was eradicated",C:"Triggered further research on non-target effects of GM crops",D:"Bt corn was proven safe for all insects",ans:"C"},
-    {id:42,q:"One scientific response to concerns about GM crop safety is:",A:"Ignoring public opinion",B:"Testing only in the lab",C:"Conducting long-term field and feeding trials",D:"Reducing sample sizes",ans:"C"},
-    {id:43,q:"What was the main claim of the poisonous potato controversy?",A:"GM potatoes improved rat health",B:"GM potatoes expressing lectin caused negative effects in rats",C:"Rats preferred GM potatoes",D:"Potatoes became inedible",ans:"B"},
-    {id:44,q:"What is one possible positive impact of GMOs on the environment?",A:"Creation of superweeds",B:"Decreased biodiversity",C:"Reduction in pesticide usage",D:"Soil contamination",ans:"C"},
-    {id:45,q:"Which of the following ethical issues is most associated with cloning humans?",A:"Reduced reproduction",B:"Genetic variation increase",C:"Identity, individuality, and moral status of clones",D:"Economic inequality",ans:"C"},
-    {id:46,q:"Why do some scientists support GMOs in developing countries?",A:"They ensure dependence on foreign companies",B:"They can enhance food security and crop resilience",C:"They eliminate natural crops",D:"They replace local practices entirely",ans:"B"},
-    {id:47,q:"A reason why some countries impose GMO labeling requirements is:",A:"To reduce research costs",B:"To promote industry profits",C:"To protect consumer autonomy and choice",D:"To discourage local farming",ans:"C"},
-    {id:48,q:"What economic disadvantage can result from GMO adoption?",A:"Increased global biodiversity",B:"Lower trade opportunities",C:"Dependence on patented seeds and higher input costs",D:"Reduction of crop yields",ans:"C"},
-    {id:49,q:"The Philippines’ BioN network mainly serves which function?",A:"Farmer seed distribution",B:"Crop export regulation",C:"Coordination and promotion of biotechnology research",D:"Seed patent approval",ans:"C"},
-    {id:50,q:"The use of Effective Microorganisms (EM) versus Indigenous Microorganisms (IMO) focuses on:",A:"Chemical fertilizer efficiency",B:"Gene therapy in humans",C:"Soil health improvement through microbial biotechnology",D:"Animal breeding",ans:"C"},
-    {id:51,q:"Which of the following is an example of a first-generation GMO crop?",A:"Golden Rice",B:"Bt cotton",C:"Drought-tolerant maize",D:"Iron-fortified rice",ans:"B"},
-    {id:52,q:"What distinguishes second-generation GMOs from first-generation ones?",A:"They are less stable",B:"They focus on nutritional or quality improvements",C:"They are only ornamental",D:"They contain no foreign DNA",ans:"B"},
-    {id:53,q:"Golden Rice was developed to address which public-health issue?",A:"Iron deficiency",B:"Vitamin A deficiency",C:"Zinc deficiency",D:"Obesity",ans:"B"},
-    {id:54,q:"The term biotechnology broadly refers to:",A:"Only genetic engineering of plants",B:"The use of living organisms or systems to make products and solve problems",C:"The study of bacteria only",D:"The cloning of animals",ans:"B"},
-    {id:55,q:"Which method can help prevent cross-pollination between GM and non-GM crops?",A:"Mixing seeds before planting",B:"Using identical crop varieties",C:"Maintaining isolation distances or buffer zones",D:"Applying chemical barriers",ans:"C"},
-    {id:56,q:"Why do developing countries face difficulty regulating GMOs?",A:"They have too many scientists",B:"They lack consumer demand",C:"They often have limited biosafety infrastructure and expertise",D:"They ban all biotechnology",ans:"C"},
-    {id:57,q:"Which principle underlies international biosafety laws for GMOs?",A:"Trade over safety",B:"Speed of approval",C:"Risk assessment and informed consent",D:"Market dominance",ans:"C"},
-    {id:58,q:"Which global issue does gene patenting raise?",A:"Encouraging biodiversity",B:"Limiting education",C:"Ownership and access to genetic resources",D:"Soil conservation",ans:"C"},
-    {id:59,q:"In gene therapy, a vector is used to:",A:"Block DNA translation",B:"Detect mutations",C:"Deliver genetic material into cells",D:"Clone new tissues",ans:"C"},
-    {id:60,q:"What is one risk of using viral vectors in gene therapy?",A:"They fail to integrate",B:"They may trigger immune responses or insertional mutations",C:"They are always inactive",D:"They multiply uncontrollably",ans:"B"},
-    {id:61,q:"Why is germline gene editing more controversial than somatic editing?",A:"It’s less effective",B:"It cannot treat diseases",C:"Changes are heritable and may affect future generations",D:"It’s cheaper and faster",ans:"C"},
-    {id:62,q:"Which of the following describes pharming?",A:"Planting GMO crops",B:"Animal cloning",C:"Using transgenic animals or plants to produce pharmaceuticals",D:"Food irradiation",ans:"C"},
-    {id:63,q:"A key argument for cloning endangered species is that it:",A:"Guarantees extinction",B:"Helps preserve biodiversity",C:"Decreases population size",D:"Increases mutation rates",ans:"B"},
-    {id:64,q:"Critics argue that cloning animals for food may:",A:"Improve milk quality",B:"Be cost-effective",C:"Raise animal welfare and ethical concerns",D:"Eliminate genetic diseases",ans:"C"},
-    {id:65,q:"What do EM and IMO technologies have in common?",A:"They are chemical fertilizers",B:"They utilize beneficial microorganisms for soil improvement",C:"They are synthetic herbicides",D:"They depend on pesticides",ans:"B"},
-    {id:66,q:"The Philippines’ National Biosafety Committee (NBC) is responsible for:",A:"Exporting GMO crops",B:"Evaluating and approving GMO applications",C:"Setting fertilizer prices",D:"Conducting field plowing",ans:"B"},
-    {id:67,q:"One argument against banning GMOs outright is that:",A:"GMOs have no risks",B:"It violates farmer rights",C:"Responsible regulation allows benefits while managing risks",D:"GMOs cannot spread",ans:"C"},
-    {id:68,q:"What does bioethics primarily address in biotechnology?",A:"Crop yield optimization",B:"Moral and social implications of biological research",C:"Plant breeding techniques",D:"Soil testing methods",ans:"B"},
-    {id:69,q:"Which is a legitimate biosafety concern in GM food production?",A:"Overpricing of seeds",B:"Reduction in marketing",C:"Accidental mixing of GM and non-GM food supplies",D:"Longer shelf life",ans:"C"},
-    {id:70,q:"What was the main lesson from the Mexican corn gene escape case?",A:"GMOs cannot survive in Mexico",B:"Corn plants cannot hybridize",C:"Gene flow monitoring is essential for biodiversity protection",D:"Bt corn is harmless to all species",ans:"C"},
-    {id:71,q:"A major difference between EM and IMO technologies is that:",A:"EM uses locally collected microbes, IMO uses commercial ones",B:"Both are identical",C:"EM uses imported cultures, IMO uses indigenous microorganisms",D:"Both rely on chemical fertilizers",ans:"C"},
-    {id:72,q:"Why are international trade disputes common over GMOs?",A:"Uniform acceptance worldwide",B:"Different nations have different GMO regulations and labeling laws",C:"All nations allow unrestricted GMO trade",D:"GMOs do not affect trade",ans:"B"},
-    {id:73,q:"Which statement best describes biopiracy?",A:"Legal patent sharing",B:"Cross-breeding native plants",C:"Unauthorized commercial use of biological resources from developing nations",D:"Theft of laboratory equipment",ans:"C"},
-    {id:74,q:"Which of the following most closely reflects the goals of sustainable biotechnology?",A:"Maximizing profit regardless of impact",B:"Using biotechnology for short-term yield boosts",C:"Balancing productivity with ecological and ethical responsibility",D:"Eliminating traditional agriculture",ans:"C"},
-    {id:75,q:"What can be a long-term ecological consequence of uncontrolled GMO cultivation?",A:"Soil fertility improvement",B:"Loss of genetic diversity and emergence of resistant pests",C:"Decrease in global temperature",D:"Improved water quality",ans:"B"},
-    {id:76,q:"Which best describes the relationship between GMOs and biodiversity?",A:"GMOs always increase biodiversity",B:"GMOs have no relationship with biodiversity",C:"Improper GMO management can reduce biodiversity through gene flow",D:"GMOs automatically restore natural species",ans:"C"},
-    {id:77,q:"Which approach ensures the safe introduction of GM crops into an ecosystem?",A:"Immediate large-scale planting",B:"Elimination of non-GM varieties",C:"Stepwise release with risk assessment and environmental monitoring",D:"Ignoring ecological effects",ans:"C"},
-    {id:78,q:"What is the primary scientific basis of public opposition to GMOs?",A:"GMOs always cause disease",B:"GMOs are not tested at all",C:"Concerns about long-term ecological and health effects",D:"GMOs are unnatural",ans:"C"},
-    {id:79,q:"Which ethical argument supports limited use of gene editing in humans?",A:"It could make humans identical",B:"It can treat serious diseases without altering normal traits",C:"It should replace traditional medicine",D:"It eliminates genetic diversity",ans:"B"},
-    {id:80,q:"Why is the regulation of GMOs considered a multidisciplinary issue?",A:"It requires only farmers’ opinions",B:"It involves science, ethics, law, and economics",C:"It is purely political",D:"It excludes consumers",ans:"B"},
-    {id:81,q:"Which example shows biotechnology improving environmental sustainability?",A:"Use of more pesticides",B:"Deforestation for GM crop expansion",C:"Bioremediation using engineered microbes",D:"Monocropping of GM soybeans",ans:"C"},
-    {id:82,q:"What is a major limitation of current GM technology?",A:"Inability to alter genes",B:"Unintended genetic effects and off-target mutations",C:"Reduced plant survival",D:"Lack of global research",ans:"B"},
-    {id:83,q:"The ethical debate on human cloning mainly centers on:",A:"The speed of cloning",B:"Its cost to scientists",C:"The moral status, identity, and rights of cloned individuals",D:"Increased biodiversity",ans:"C"},
-    {id:84,q:"Why might farmers in developing countries hesitate to adopt GMOs?",A:"They are anti-technology",B:"High seed prices and dependency on multinational corporations",C:"GMOs have no market value",D:"GMOs always fail in tropical climates",ans:"B"},
-    {id:85,q:"What is the core principle of the Cartagena Protocol on Biosafety?",A:"Mandatory use of GMOs in agriculture",B:"Free trade of transgenic crops",C:"Protection of biodiversity from potential GMO risks",D:"Industrial ownership of genetic materials",ans:"C"},
-    {id:86,q:"In the Philippines, which agency primarily regulates the field testing of GM crops?",A:"Department of Tourism (DOT)",B:"Department of Agriculture (DA)",C:"Department of Health (DOH)",D:"Department of Trade and Industry (DTI)",ans:"B"},
-    {id:87,q:"Which is not an argument used by opponents of GMO labeling?",A:"Labeling increases consumer awareness",B:"Labeling could cause unnecessary fear among consumers",C:"It increases food costs",D:"It stigmatizes GM products",ans:"B"},
-    {id:88,q:"The phrase “playing God” often appears in biotechnology debates. It refers to:",A:"The efficiency of genetic engineering",B:"The moral concern of altering life’s natural design",C:"A new genetic technique",D:"Government regulation",ans:"B"},
-    {id:89,q:"What was one lesson from the poisonous potato controversy?",A:"All GMOs are dangerous",B:"GM potatoes are superior in nutrition",C:"Proper experimental design and peer review are vital before releasing claims",D:"Bt toxins are universally safe",ans:"C"},
-    {id:90,q:"How do GM crops contribute to climate change adaptation?",A:"They trap carbon dioxide",B:"They create new ecosystems",C:"They can be engineered for drought and heat resistance",D:"They replace forests",ans:"C"},
-    {id:91,q:"What distinguishes BioN from commercial biotech firms in the Philippines?",A:"It is a private seed company",B:"It is a national collaborative network promoting research and education",C:"It manufactures only fertilizers",D:"It imports GM seeds",ans:"B"},
-    {id:92,q:"What is one ethical justification for GMO research?",A:"It guarantees corporate profit",B:"It ensures human superiority",C:"It can help reduce malnutrition and hunger",D:"It replaces all organic farming",ans:"C"},
-    {id:93,q:"What is the main reason labeling of GM food is required in many countries?",A:"To promote GMO exports",B:"To increase profit margins",C:"To ensure transparency and consumer choice",D:"To hide allergens",ans:"C"},
-    {id:94,q:"Which statement is true about the EM vs. IMO approaches?",A:"Both destroy soil microbes",B:"EM uses standardized mixed cultures; IMO relies on local microbes",C:"EM requires chemicals to activate",D:"IMO reduces soil fertility",ans:"B"},
-    {id:95,q:"Which of the following can be an unintended ecological consequence of Bt crops?",A:"Increased soil fertility",B:"Attraction of more pollinators",C:"Resistance development in target insects",D:"Enhanced biodiversity",ans:"C"},
-    {id:96,q:"What is one reason that intellectual property rights (IPR) are controversial in biotechnology?",A:"They promote scientific collaboration",B:"They guarantee fair access to farmers",C:"They can restrict access to life-saving technologies",D:"They prevent competition",ans:"C"},
-    {id:97,q:"Which is an example of biotechnology misuse?",A:"Production of drought-tolerant crops",B:"Vaccine development",C:"Creation of biological weapons",D:"Environmental restoration",ans:"C"},
-    {id:98,q:"Why are public-private partnerships important in advancing biotechnology in the Philippines?",A:"They restrict innovation",B:"They promote monopolies",C:"They combine government oversight with private innovation",D:"They replace universities",ans:"C"},
-    {id:99,q:"Which of the following is a potential social impact of widespread GMO adoption?",A:"Decreased farm employment",B:"Increased soil fertility",C:"Farmer dependency on patented technologies",D:"Improved biodiversity",ans:"C"},
-    {id:100,q:"The ultimate goal of ethical biotechnology practice is to:",A:"Maximize economic profit",B:"Eliminate all natural crops",C:"Improve human welfare while protecting the environment and respecting rights",D:"Replace traditional agriculture",ans:"C"},
-  ];
-
-  /* ==========================
-     QUIZ LOGIC
-  ========================== */
-  const el = id => document.getElementById(id);
-  const stageName = el('stageName');
-  const stageQuiz = el('stageQuiz');
-  const stageResult = el('stageResult');
-  const btnStart = el('btnStart');
-  const inputName = el('studentName');
-  const inputSection = el('studentSection');
-  const qtext = el('qtext');
-  const choicesEl = el('choices');
-  const btnPrev = el('btnPrev');
-  const btnNext = el('btnNext');
-  const counter = el('counter');
-  const who = el('who');
-  const sectionPill = el('sectionPill');
-  const timer = el('timer');
-  const penaltiesBadge = el('penalties');
-  const deductBadge = el('deduct');
-  const bar = el('bar');
-  const toast = el('toast');
-
-  const resName = el('resName');
-  const resSection = el('resSection');
-  const resRaw = el('resRaw');
-  const resPenalty = el('resPenalty');
-  const resFinal = el('resFinal');
-
-  // Shuffle util
-  function shuffle(arr){
-    for(let i=arr.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]]=[arr[j],arr[i]];
-    }
-    return arr;
-  }
-
-  // Build working list: shuffle per session, but keep original `id`.
-  const working = shuffle(QUESTIONS.map(x => ({...x})));
-  const N = working.length;
-
-  // State
-  let idx = 0;
-  let answers = Array(N).fill(null); // 'A'|'B'|'C'|'D'|null
-  let started = false;
-  let secondsLeft = 60*60; // 1 hour
-  let timerHandle = null;
-  let tabSwitches = 0;
-
-  function showToast(msg){
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(()=>toast.classList.remove('show'), 1800);
-  }
-
-  function render(){
-    counter.textContent = `Q: ${idx+1} / ${N}`;
-    const q = working[idx];
-    qtext.textContent = q.q; // no numbering visible during quiz
-    choicesEl.innerHTML = '';
-    ['A','B','C','D'].forEach(letter=>{
-      const wrap = document.createElement('label');
-      wrap.className='choice';
-      wrap.innerHTML = `
-        <input type="radio" name="opt" value="${letter}">
-        <div><b>${letter}.</b> ${q[letter]}</div>
-      `;
-      choicesEl.appendChild(wrap);
-    });
-    // restore selection
-    if(answers[idx]){
-      const sel = choicesEl.querySelector(`input[value="${answers[idx]}"]`);
-      if(sel) sel.checked = true;
-    }
-    // buttons
-    btnPrev.disabled = (idx===0);
-    btnNext.textContent = (idx===N-1) ? 'Submit' : 'Next';
-    // progress bar
-    bar.style.width = `${((idx)/Math.max(1,(N-1)))*100}%`;
-  }
-
-  function getSelected(){
-    const sel = choicesEl.querySelector('input[name="opt"]:checked');
-    return sel ? sel.value : null;
-  }
-
-  function toQuiz(){
-    stageName.classList.remove('active');
-    stageQuiz.classList.add('active');
-    started = true;
-    render();
-    startTimer();
-  }
-
-  function toResults(payload){
-    stageQuiz.classList.remove('active');
-    stageResult.classList.add('active');
-
-    const {studentName,yearSection, rawScore, penalties, finalScore} = payload;
-    resName.textContent = studentName;
-    resSection.textContent = yearSection;
-    resRaw.textContent = rawScore;
-    resPenalty.textContent = penalties*10;
-    resFinal.textContent = finalScore;
-  }
-
-  function computeAndSubmit(){
-    // Build sheet from randomized order, then sort back by originalId
-    let raw = 0;
-    const sheetUnordered = working.map((q, i) => {
-      const chosen = answers[i];
-      if (chosen && chosen === q.ans) raw++;
-      return {
-        displayNo: i+1,           // position in randomized display
-        originalId: q.id,         // original question number (1..100)
-        text: q.q,
-        A: q.A, B: q.B, C: q.C, D: q.D,
-        correct: q.ans,
-        chosen: chosen ?? null
-      };
-    });
-    const orderedSheet = sheetUnordered.sort((a,b)=>a.originalId - b.originalId);
-
-    const penalties = tabSwitches;
-    const finalScore = Math.max(0, raw - penalties*10);
-
-    const studentName = inputName.value.trim();
-    const yearSection = inputSection.value.trim();
-
-    const payload = {
-      studentName,
-      yearSection,
-      rawScore: raw,
-      penalties,
-      finalScore,
-      secondsRemaining: secondsLeft,
-      submittedAt: new Date().toISOString()
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY_HERE",
+        authDomain: "YOUR_AUTH_DOMAIN_HERE",
+        projectId: "YOUR_PROJECT_ID_HERE",
+        storageBucket: "YOUR_STORAGE_BUCKET_HERE",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID_HERE",
+        appId: "YOUR_APP_ID_HERE"
+        // measurementId: "OPTIONAL"
     };
 
-    (async ()=>{
-      try{
-        if (db && addDoc && collection){
-          await addDoc(collection(db, "submissions"), {
-            name: studentName,
-            section: yearSection,
-            rawScore: raw,
-            penalties,
-            finalScore,
-            secondsRemaining: secondsLeft,
-            sheet: orderedSheet,       // full detailed sheet saved for admin
-            createdAt: serverTimestamp()
-          });
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const finalsExamCollection = collection(db, "finals-exam");
+
+    /*********************************************************
+     *  QUESTION DATA
+     *  (50 items from your Agribiotech exam; letters A-D)
+     *********************************************************/
+    const questions = [
+        {
+            number: 1,
+            text: "Biocon agents such as compost activators are primarily used to:",
+            options: {
+                A: "Kill all microorganisms in compost",
+                B: "Speed up the decomposition of organic materials",
+                C: "Sterilize soil",
+                D: "Remove all moisture from compost"
+            },
+            correct: "B"
+        },
+        {
+            number: 2,
+            text: "Which microorganism group is MOST commonly involved in compost activation and organic waste fermentation?",
+            options: {
+                A: "Viruses",
+                B: "Lactic acid bacteria and fungi",
+                C: "Helminths",
+                D: "Nematodes"
+            },
+            correct: "B"
+        },
+        {
+            number: 3,
+            text: "Why are fermentation agents added to organic fertilizers?",
+            options: {
+                A: "To make the fertilizer smell good only",
+                B: "To promote controlled microbial activity that stabilizes nutrients",
+                C: "To increase the weight artificially",
+                D: "To remove all nutrients from the compost"
+            },
+            correct: "B"
+        },
+        {
+            number: 4,
+            text: "A farmer wants faster composting of rice straw and animal manure. Which practice best applies the use of biocon agents?",
+            options: {
+                A: "Leaving the pile dry and uncovered",
+                B: "Spraying a commercial compost activator and maintaining moisture",
+                C: "Burning the residues on the field",
+                D: "Adding only synthetic fertilizer"
+            },
+            correct: "B"
+        },
+        {
+            number: 5,
+            text: "Lab results show that compost treated with a fermentation agent has higher microbial activity and faster breakdown than untreated compost. What is the MOST logical analysis?",
+            options: {
+                A: "The activator had no effect",
+                B: "The activator enhanced microbial activity, improving decomposition",
+                C: "The activator killed all microbes",
+                D: "Fermentation agents always reduce compost quality"
+            },
+            correct: "B"
+        },
+        {
+            number: 6,
+            text: "Biopharming refers to the use of:",
+            options: {
+                A: "Traditional plowing methods",
+                B: "Animals to weed the field",
+                C: "Crops or animals engineered to produce pharmaceutical products",
+                D: "Organic fertilizers in farms"
+            },
+            correct: "C"
+        },
+        {
+            number: 7,
+            text: "Which is an example of biopharming?",
+            options: {
+                A: "Using cows to graze grass",
+                B: "Producing vaccines in transgenic plants",
+                C: "Applying manure to crops",
+                D: "Spraying herbicides"
+            },
+            correct: "B"
+        },
+        {
+            number: 8,
+            text: "A company uses genetically modified maize to produce a human therapeutic protein. How does this apply biopharming?",
+            options: {
+                A: "Maize is only used as food",
+                B: "Maize acts as a factory for pharmaceutical protein production",
+                C: "Maize is used only as animal feed",
+                D: "Maize is burned after harvest"
+            },
+            correct: "B"
+        },
+        {
+            number: 9,
+            text: "A concern is raised that biopharming crops might unintentionally mix with food crops. What is this mainly an example of?",
+            options: {
+                A: "Improved biodiversity",
+                B: "Possible gene flow and contamination risk",
+                C: "Better food quality",
+                D: "Guaranteed safety"
+            },
+            correct: "B"
+        },
+        {
+            number: 10,
+            text: "A policy maker must decide whether to allow open-field trials of biopharming crops near food production areas. From a regulatory standpoint, how should this be evaluated?",
+            options: {
+                A: "Approve immediately without risk assessment",
+                B: "Reject all trials without discussion",
+                C: "Carefully weigh potential health, environmental, and economic risks versus benefits and require strict biosafety measures",
+                D: "Allow trials with no monitoring"
+            },
+            correct: "C"
+        },
+        {
+            number: 11,
+            text: "Phytoremediation is best defined as the:",
+            options: {
+                A: "Use of chemicals to remove soil pollutants",
+                B: "Use of plants to absorb, stabilize, or detoxify contaminants",
+                C: "Burning contaminated soils",
+                D: "Deep plowing to bury pollutants"
+            },
+            correct: "B"
+        },
+        {
+            number: 12,
+            text: "Which situation is most suitable for phytoremediation?",
+            options: {
+                A: "Lightly metal-contaminated soil with adequate plant growth",
+                B: "Extremely radioactive waste only",
+                C: "Clean, uncontaminated soil",
+                D: "Deep ocean pollution"
+            },
+            correct: "A"
+        },
+        {
+            number: 13,
+            text: "A community uses sunflower to extract heavy metals from contaminated soil. This is an example of:",
+            options: {
+                A: "Chemical remediation",
+                B: "Phytoremediation using hyperaccumulator plants",
+                C: "Soil sterilization",
+                D: "Salinization"
+            },
+            correct: "B"
+        },
+        {
+            number: 14,
+            text: "Soil tests show reduced metal concentration in the upper layer where certain plants were grown. What is the MOST likely analysis?",
+            options: {
+                A: "Metals disappeared naturally",
+                B: "Plants absorbed metals, supporting phytoremediation",
+                C: "Sampling error only",
+                D: "Metals became more toxic"
+            },
+            correct: "B"
+        },
+        {
+            number: 15,
+            text: "When evaluating phytoremediation vs. soil excavation and disposal, which statement is most appropriate from a sustainability standpoint?",
+            options: {
+                A: "Excavation is always better",
+                B: "Phytoremediation can be more sustainable where time is available, as it is less disruptive and often cheaper",
+                C: "Phytoremediation is never effective",
+                D: "Only excavation protects the environment"
+            },
+            correct: "B"
+        },
+        {
+            number: 16,
+            text: "“Fake seeds” in agriculture usually refer to:",
+            options: {
+                A: "Seeds that are larger than normal",
+                B: "Seeds with falsified labels or poor genetic and physical quality sold as branded seeds",
+                C: "Any seed from farmers’ fields",
+                D: "Seeds with high germination"
+            },
+            correct: "B"
+        },
+        {
+            number: 17,
+            text: "Which sign may help a farmer understand that seeds might be fake or spurious?",
+            options: {
+                A: "Properly sealed, labeled packaging from a registered source",
+                B: "Very low germination and off-type plants compared with label claims",
+                C: "Seed tested by accredited labs",
+                D: "Documentation of certification"
+            },
+            correct: "B"
+        },
+        {
+            number: 18,
+            text: "A farmer buys “hybrid rice seeds” from an unknown vendor at a very low price and gets poor, non-uniform yield. How does this situation apply the problem of fake seeds?",
+            options: {
+                A: "Farmer used high quality certified seeds",
+                B: "The seed may have been fake or mislabelled, leading to poor performance",
+                C: "Hybrid seeds always fail",
+                D: "Low price always means better quality"
+            },
+            correct: "B"
+        },
+        {
+            number: 19,
+            text: "Regional data show high incidence of crop failure linked to unregistered seed vendors. What is the most reasonable analysis?",
+            options: {
+                A: "Registered vendors cause the problem",
+                B: "Weak regulation and enforcement allow fake seed trade, harming yields",
+                C: "Seed quality has no effect on yield",
+                D: "Farmers do not need seed laws"
+            },
+            correct: "B"
+        },
+        {
+            number: 20,
+            text: "A government considers stricter penalties and better monitoring for fake seed sellers. From a policy perspective, how should this be evaluated?",
+            options: {
+                A: "Unnecessary, because seed quality does not matter",
+                B: "Positive, as it protects farmers, yield, and integrity of seed systems",
+                C: "Harmful to all stakeholders",
+                D: "Only important for exporters"
+            },
+            correct: "B"
+        },
+        {
+            number: 21,
+            text: "Vaccines in livestock are used primarily to:",
+            options: {
+                A: "Treat worms",
+                B: "Prevent specific infectious diseases by stimulating immunity",
+                C: "Increase body weight instantly",
+                D: "Reduce water consumption"
+            },
+            correct: "B"
+        },
+        {
+            number: 22,
+            text: "Artificial insemination (AI) in cattle is best described as:",
+            options: {
+                A: "Natural mating by bulls",
+                B: "Manual insertion of semen into the female reproductive tract using collected semen",
+                C: "Use of hormones to induce heat",
+                D: "Surgical removal of ovaries"
+            },
+            correct: "B"
+        },
+        {
+            number: 23,
+            text: "Multiple Ovulation and Embryo Transfer (MOET) is a technology that applies biotechnology by:",
+            options: {
+                A: "Destroying embryos in elite cows",
+                B: "Producing many embryos from a superior female and transferring them to recipients",
+                C: "Preventing reproduction",
+                D: "Reducing genetic gain"
+            },
+            correct: "B"
+        },
+        {
+            number: 24,
+            text: "Probiotics are generally defined as:",
+            options: {
+                A: "Synthetic antibiotics",
+                B: "Live microorganisms that when administered in adequate amounts confer a health benefit",
+                C: "Chemical preservatives",
+                D: "Soil fumigants"
+            },
+            correct: "B"
+        },
+        {
+            number: 25,
+            text: "A poultry farmer adds probiotics to feed and later observes improved gut health and reduced diarrhea. What is the MOST logical analysis?",
+            options: {
+                A: "Probiotics had no role",
+                B: "Probiotics likely supported beneficial gut microbes, improving health",
+                C: "Probiotics caused the disease",
+                D: "Gut health is unrelated to probiotics"
+            },
+            correct: "B"
+        },
+        {
+            number: 26,
+            text: "A committee must decide whether to prioritize AI/MOET programs in national breeding plans. From a breeding and resource viewpoint, how should this be evaluated?",
+            options: {
+                A: "Not useful because natural mating is always superior",
+                B: "Potentially advantageous because AI/MOET can rapidly spread superior genetics if managed ethically and sustainably",
+                C: "Always harmful to breeds",
+                D: "Unrelated to genetic improvement"
+            },
+            correct: "B"
+        },
+        {
+            number: 27,
+            text: "One promise of future biotechnology in agriculture is to:",
+            options: {
+                A: "Produce crops with lower resilience",
+                B: "Develop stress-tolerant, nutrient-efficient varieties",
+                C: "Eliminate all biodiversity",
+                D: "Replace all traditional knowledge"
+            },
+            correct: "B"
+        },
+        {
+            number: 28,
+            text: "“Biotech products nearing commercialization” often include crops that:",
+            options: {
+                A: "Have no useful traits",
+                B: "May carry traits such as drought tolerance, biofortification, or disease resistance",
+                C: "Only change plant color",
+                D: "Remove all natural defenses"
+            },
+            correct: "B"
+        },
+        {
+            number: 29,
+            text: "A breeding program uses biotechnology to create rice with enhanced vitamin A content (e.g., biofortified rice). How does this apply biotechnology to public health?",
+            options: {
+                A: "It ignores nutrition issues",
+                B: "It aims to reduce micronutrient deficiency in populations dependent on rice",
+                C: "It reduces yield only",
+                D: "It targets only cosmetic traits"
+            },
+            correct: "B"
+        },
+        {
+            number: 30,
+            text: "Data show that a biotech crop reduces pesticide use but may increase dependence on a few seed suppliers. What is the best analysis of its role in a sustainable future?",
+            options: {
+                A: "Benefits and risks are both present—less chemical use vs. potential seed access issues",
+                B: "All biotech crops are always harmful",
+                C: "Only seed dependence matters",
+                D: "Only pesticide reduction matters"
+            },
+            correct: "A"
+        },
+        {
+            number: 31,
+            text: "When evaluating future biotech options for sustainable agriculture, which reasoning is most appropriate?",
+            options: {
+                A: "Accept all biotech instantly",
+                B: "Reject all biotech absolutely",
+                C: "Carefully assess each product’s ecological, social, and economic impacts relative to alternatives",
+                D: "Decide only on the basis of short-term profit"
+            },
+            correct: "C"
+        },
+        {
+            number: 32,
+            text: "The main purpose of biosafety regulations in biotechnology is to:",
+            options: {
+                A: "Stop all research",
+                B: "Ensure safe development, handling, and use of biotech products",
+                C: "Promote uncontrolled release of GMOs",
+                D: "Replace traditional agriculture"
+            },
+            correct: "B"
+        },
+        {
+            number: 33,
+            text: "Which international agreement is specifically concerned with the transboundary movement of living modified organisms (LMOs)?",
+            options: {
+                A: "Paris Agreement",
+                B: "Cartagena Protocol on Biosafety",
+                C: "Kyoto Protocol",
+                D: "Basel Convention on Hazardous Wastes"
+            },
+            correct: "B"
+        },
+        {
+            number: 34,
+            text: "Local biosafety regulations generally aim to help people understand that:",
+            options: {
+                A: "Biotech products require no risk assessment",
+                B: "There is a structured system for risk assessment, approval, and monitoring",
+                C: "Only foreign experts can decide",
+                D: "Farmers have no role"
+            },
+            correct: "B"
+        },
+        {
+            number: 35,
+            text: "A regulatory body requires environmental risk assessment before releasing a new GM crop. How does this apply the principles behind biosafety laws?",
+            options: {
+                A: "It ignores ecological concerns",
+                B: "It operationalizes precaution and risk-based decision making",
+                C: "It accelerates release without data",
+                D: "It bans all GM crops automatically"
+            },
+            correct: "B"
+        },
+        {
+            number: 36,
+            text: "Monitoring reports show that a regulatory institution lacks capacity and coordination, leading to slow and inconsistent decisions. What is the best analysis?",
+            options: {
+                A: "Regulation is unnecessary",
+                B: "Weak institutions undermine effective biosafety governance and trust",
+                C: "Slow decisions mean better safety",
+                D: "Institutions are irrelevant"
+            },
+            correct: "B"
+        },
+        {
+            number: 37,
+            text: "A national biotech law emphasizes transparency, public participation, and risk-benefit analysis. From a governance viewpoint, how should this be evaluated?",
+            options: {
+                A: "Negative, because public involvement complicates decisions",
+                B: "Positive, because it promotes accountability, inclusiveness, and informed decision making",
+                C: "Neutral, since laws never affect trust",
+                D: "Unimportant to biosafety"
+            },
+            correct: "B"
+        },
+        {
+            number: 38,
+            text: "“Alternatives in biotechnology” can refer to:",
+            options: {
+                A: "Only chemical-intensive practices",
+                B: "Using non-GM breeding, integrated pest management, or ecological approaches alongside or instead of GM tools",
+                C: "Stopping all crop improvement",
+                D: "Burning crop fields"
+            },
+            correct: "B"
+        },
+        {
+            number: 39,
+            text: "A farmer chooses marker-assisted selection and organic pest management instead of GM crops. This is an example of:",
+            options: {
+                A: "Rejecting all technology",
+                B: "Using alternative biotechnological and ecological approaches",
+                C: "Avoiding crop improvement altogether",
+                D: "Illegal practice"
+            },
+            correct: "B"
+        },
+        {
+            number: 40,
+            text: "Comparing GM-based pest resistance with integrated pest management (IPM), which statement shows a balanced analysis?",
+            options: {
+                A: "GM is always better than IPM",
+                B: "IPM is always better than GM",
+                C: "Both approaches have roles; their suitability depends on local ecology, economics, and risk considerations",
+                D: "Neither approach is useful"
+            },
+            correct: "C"
+        },
+        {
+            number: 41,
+            text: "A policy prioritizes only high-tech biotech while ignoring local, low-cost alternatives. From a sustainability and equity perspective, how should this be evaluated?",
+            options: {
+                A: "Ideal for all farmers",
+                B: "Potentially inequitable and less sustainable for resource-poor farmers",
+                C: "Neutral",
+                D: "Always the best choice"
+            },
+            correct: "B"
+        },
+        {
+            number: 42,
+            text: "Which statement best describes the role of institutions (universities, research centers, regulators) in biotechnology?",
+            options: {
+                A: "They only sell products",
+                B: "They generate knowledge, assess risks, train people, and help guide safe application",
+                C: "They stop all innovation",
+                D: "They only serve private companies"
+            },
+            correct: "B"
+        },
+        {
+            number: 43,
+            text: "A research institute develops a probiotic-based compost activator to help small farmers. How does this apply biotechnology for sustainability?",
+            options: {
+                A: "It increases chemical pesticide use",
+                B: "It offers a biological tool to enhance soil health and waste recycling",
+                C: "It reduces soil organic matter",
+                D: "It encourages burning residues"
+            },
+            correct: "B"
+        },
+        {
+            number: 44,
+            text: "Data show that farms using probiotics, phytoremediation, and compost activators have improved soil quality and reduced chemical inputs. What can be reasonably concluded?",
+            options: {
+                A: "These biotechnologies are harmful",
+                B: "These biotechnologies can contribute to more sustainable soil management",
+                C: "Soil quality is unrelated to management",
+                D: "Chemicals are always superior"
+            },
+            correct: "B"
+        },
+        {
+            number: 45,
+            text: "When selecting between a pharma-producing GM crop (biopharming) and conventional pharmaceutical production in factories, what is a key factor to evaluate?",
+            options: {
+                A: "Only the color of the plant",
+                B: "Environmental, biosafety, containment, and economic considerations of each route",
+                C: "The company logo",
+                D: "Popularity on social media"
+            },
+            correct: "B"
+        },
+        {
+            number: 46,
+            text: "In AI/MOET programs, which aspect is MOST important to remember in planning?",
+            options: {
+                A: "Only coat color of animals",
+                B: "Selection of genetically superior and healthy donors and sires",
+                C: "Random selection of animals",
+                D: "Ignoring disease control"
+            },
+            correct: "B"
+        },
+        {
+            number: 47,
+            text: "A biopharming crop is proposed to be grown in a region with weak regulatory capacity and high risk of mixing with food crops. What is the MOST appropriate analysis?",
+            options: {
+                A: "No concern because biotech is always safe",
+                B: "The context increases biosafety and contamination risks and demands strong precaution",
+                C: "It guarantees better food quality",
+                D: "It has only economic benefits"
+            },
+            correct: "B"
+        },
+        {
+            number: 48,
+            text: "A multi-stakeholder platform (farmers, NGOs, scientists, regulators) is created to discuss GM crop adoption. From a governance viewpoint, how should this be evaluated?",
+            options: {
+                A: "Unnecessary delay",
+                B: "Valuable for incorporating diverse perspectives and building social legitimacy",
+                C: "Always anti-technology",
+                D: "Irrelevant to decision-making"
+            },
+            correct: "B"
+        },
+        {
+            number: 49,
+            text: "Which of the following is a correct understanding of how vaccines differ from probiotics in livestock production?",
+            options: {
+                A: "Vaccines directly kill pathogens; probiotics are only vitamins",
+                B: "Vaccines stimulate specific immune responses; probiotics support gut health and microbial balance",
+                C: "Both are exactly the same",
+                D: "Probiotics always replace vaccination"
+            },
+            correct: "B"
+        },
+        {
+            number: 50,
+            text: "A country invests in regulations, training, and infrastructure for biosafety while also supporting alternative and low-cost biotechnologies. From a long-term sustainability perspective, how should this strategy be evaluated?",
+            options: {
+                A: "Wasteful, since only one technology is needed",
+                B: "Positive, because it balances innovation, safety, and inclusiveness for different types of farmers",
+                C: "Harmful, as it limits choices",
+                D: "Neutral, with no real impact"
+            },
+            correct: "B"
         }
-      }catch(err){
-        console.warn("Firestore write failed:", err);
-      }finally{
-        toResults(payload);
-      }
+    ];
+
+    /*********************************************************
+     *  STATE
+     *********************************************************/
+    let currentQuestionIndex = 0;
+    let userAnswers = new Array(questions.length).fill(null); // store letters "A"-"D"
+    let secondsRemaining = EXAM_DURATION_SECONDS;
+    let timerId = null;
+    let currentStudent = {
+        name: "",
+        section: "",
+        attemptNumber: 1,
+        userKey: ""
+    };
+    let isSubmitting = false;
+
+    /*********************************************************
+     *  DOM ELEMENTS
+     *********************************************************/
+    const introScreen       = document.getElementById("introScreen");
+    const studentInfoScreen = document.getElementById("studentInfoScreen");
+    const examScreen        = document.getElementById("examScreen");
+
+    const understandBtn     = document.getElementById("understandBtn");
+    const introMessage      = document.getElementById("introMessage");
+
+    const studentNameInput   = document.getElementById("studentName");
+    const studentSectionInput= document.getElementById("studentSection");
+    const backToIntroBtn     = document.getElementById("backToIntroBtn");
+    const toExamBtn          = document.getElementById("toExamBtn");
+    const studentInfoMessage = document.getElementById("studentInfoMessage");
+
+    const studentMeta     = document.getElementById("studentMeta");
+    const timerDisplay    = document.getElementById("timerDisplay");
+    const questionCounter = document.getElementById("questionCounter");
+    const questionText    = document.getElementById("questionText");
+    const optionsList     = document.getElementById("optionsList");
+
+    const prevQuestionBtn = document.getElementById("prevQuestionBtn");
+    const nextQuestionBtn = document.getElementById("nextQuestionBtn");
+    const submitExamBtn   = document.getElementById("submitExamBtn");
+    const examMessage     = document.getElementById("examMessage");
+
+    const toastEl       = document.getElementById("toast");
+    const closedOverlay = document.getElementById("closedOverlay");
+    const closedMessage = document.getElementById("closedMessage");
+
+    /*********************************************************
+     *  UTILITIES
+     *********************************************************/
+    function showToast(title, message, type = "success") {
+        toastEl.classList.remove("hidden", "success", "error");
+        toastEl.classList.add(type === "error" ? "error" : "success");
+        toastEl.innerHTML = `<strong>${title}</strong>${message}`;
+        setTimeout(() => {
+            toastEl.classList.add("hidden");
+        }, 6000);
+    }
+
+    function formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        const mm = String(m).padStart(2, "0");
+        const ss = String(s).padStart(2, "0");
+        return `${mm}:${ss}`;
+    }
+
+    function updateTimerDisplay() {
+        timerDisplay.textContent = `Time remaining: ${formatTime(secondsRemaining)}`;
+    }
+
+    function startTimer() {
+        updateTimerDisplay();
+        timerId = setInterval(() => {
+            secondsRemaining--;
+            if (secondsRemaining < 0) {
+                clearInterval(timerId);
+                timerId = null;
+                examMessage.textContent = "Time is up. Submitting your exam...";
+                submitExam(true); // auto-submit
+            } else {
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        if (timerId !== null) {
+            clearInterval(timerId);
+            timerId = null;
+        }
+    }
+
+    function renderQuestion() {
+        const q = questions[currentQuestionIndex];
+        questionCounter.textContent = `Question ${currentQuestionIndex + 1} / ${questions.length}`;
+        questionText.textContent = q.number + ". " + q.text;
+
+        optionsList.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+
+        letters.forEach(letter => {
+            if (!(letter in q.options)) return;
+            const li = document.createElement("li");
+            const input = document.createElement("input");
+            const labelSpan = document.createElement("span");
+
+            input.type = "radio";
+            input.name = "option";
+            input.value = letter;
+
+            labelSpan.textContent = `${letter}. ${q.options[letter]}`;
+
+            if (userAnswers[currentQuestionIndex] === letter) {
+                input.checked = true;
+                li.classList.add("selected");
+            }
+
+            input.addEventListener("change", () => {
+                userAnswers[currentQuestionIndex] = letter;
+                // update selection styling
+                Array.from(optionsList.children).forEach(liEl => liEl.classList.remove("selected"));
+                li.classList.add("selected");
+            });
+
+            li.appendChild(input);
+            li.appendChild(labelSpan);
+            li.addEventListener("click", (e) => {
+                if (e.target !== input) {
+                    input.checked = true;
+                    input.dispatchEvent(new Event("change"));
+                }
+            });
+
+            optionsList.appendChild(li);
+        });
+
+        // navigation buttons
+        prevQuestionBtn.disabled = currentQuestionIndex === 0;
+        if (currentQuestionIndex === questions.length - 1) {
+            nextQuestionBtn.classList.add("hidden");
+            submitExamBtn.classList.remove("hidden");
+        } else {
+            nextQuestionBtn.classList.remove("hidden");
+            submitExamBtn.classList.add("hidden");
+        }
+
+        examMessage.textContent = "";
+    }
+
+    function computeScoreAndSheet() {
+        let score = 0;
+        const answerSheet = questions.map((q, index) => {
+            const chosen = userAnswers[index];
+            const correct = q.correct;
+            const isCorrect = chosen === correct;
+            if (isCorrect) score++;
+            return {
+                questionNumber: q.number,
+                questionText: q.text,
+                chosenAnswer: chosen,
+                correctAnswer: correct,
+                isCorrect
+            };
+        });
+        return { score, answerSheet };
+    }
+
+    function computeUserKey(name, section) {
+        return (name.trim().toLowerCase() + "__" + section.trim().toLowerCase());
+    }
+
+    function setExamClosed(message) {
+        closedMessage.textContent = message;
+        closedOverlay.classList.remove("hidden");
+        introScreen.classList.add("hidden");
+        studentInfoScreen.classList.add("hidden");
+        examScreen.classList.add("hidden");
+    }
+
+    async function checkAttemptLimit(name, section) {
+        const userKey = computeUserKey(name, section);
+        const q = query(
+            finalsExamCollection,
+            where("Course", "==", COURSE_NAME),
+            where("userKey", "==", userKey)
+        );
+        const snapshot = await getDocs(q);
+        const attempts = snapshot.size;
+        if (attempts >= 2) {
+            return { allowed: false, attemptNumber: attempts };
+        } else {
+            return { allowed: true, attemptNumber: attempts + 1 };
+        }
+    }
+
+    /*********************************************************
+     *  SUBMISSION
+     *********************************************************/
+    async function submitExam(auto = false) {
+        if (isSubmitting) return; // prevent double logic (button stays enabled visually)
+        isSubmitting = true;
+
+        const { score, answerSheet } = computeScoreAndSheet();
+
+        const payload = {
+            Course: COURSE_NAME,
+            submissionDate: serverTimestamp(),
+            Score: score,
+            Name: currentStudent.name,
+            secondsRemaining: secondsRemaining,
+            section: currentStudent.section,
+            answerSheet: answerSheet,
+            attemptNumber: currentStudent.attemptNumber,
+            userKey: currentStudent.userKey
+        };
+
+        try {
+            await addDoc(finalsExamCollection, payload);
+            stopTimer();
+            examMessage.textContent = "";
+            showToast("Success", "Your exam has been submitted.", "success");
+            alert("Your exam has been submitted.");
+            // requirement: disable submit button only on success
+            submitExamBtn.disabled = true;
+            prevQuestionBtn.disabled = true;
+            nextQuestionBtn.disabled = true;
+        } catch (err) {
+            console.error("Submission error:", err);
+            showToast("Submission Failed", "Submission failed, please try again.", "error");
+            alert("Submission fail, please try again.");
+            examMessage.textContent = "Submission failed. Please check your internet connection and try again.";
+        } finally {
+            isSubmitting = false;
+        }
+    }
+
+    /*********************************************************
+     *  EVENT HANDLERS
+     *********************************************************/
+    // Check exam closing time on load
+    (function checkClosing() {
+        if (EXAM_END instanceof Date) {
+            const now = new Date();
+            if (now > EXAM_END) {
+                setExamClosed("This exam has been closed (after the scheduled deadline).");
+            }
+        }
     })();
-  }
 
-  function next(){
-    const sel = getSelected();
-    if(!sel){
-      showToast("Please choose an answer before proceeding.");
-      return;
-    }
-    answers[idx] = sel;
-    if(idx === N-1){
-      clearInterval(timerHandle);
-      computeAndSubmit();
-    }else{
-      idx++;
-      render();
-    }
-  }
+    understandBtn.addEventListener("click", () => {
+        introMessage.textContent = "";
+        introScreen.classList.add("hidden");
+        studentInfoScreen.classList.remove("hidden");
+    });
 
-  function prev(){
-    if(idx>0){
-      const sel = getSelected();
-      if(sel) answers[idx] = sel;
-      idx--;
-      render();
-    }
-  }
+    backToIntroBtn.addEventListener("click", () => {
+        studentInfoMessage.textContent = "";
+        introScreen.classList.remove("hidden");
+        studentInfoScreen.classList.add("hidden");
+    });
 
-  function startTimer(){
-    function fmt(s){
-      const m = Math.floor(s/60), ss = s%60;
-      return `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
-    }
-    timer.textContent = `Time: ${fmt(secondsLeft)}`;
-    timerHandle = setInterval(()=>{
-      secondsLeft--;
-      if(secondsLeft<=0){
-        clearInterval(timerHandle);
-        answers[idx] = getSelected() ?? answers[idx];
-        computeAndSubmit();
-      }else{
-        timer.textContent = `Time: ${fmt(secondsLeft)}`;
-      }
-    },1000);
-  }
+    toExamBtn.addEventListener("click", async () => {
+        studentInfoMessage.textContent = "";
+        const name = studentNameInput.value.trim();
+        const section = studentSectionInput.value.trim();
 
-  // Tab switch detection (cheating penalty)
-  document.addEventListener('visibilitychange', ()=>{
-    if (!started) return;
-    if (document.hidden){
-      tabSwitches++;
-      penaltiesBadge.textContent = `Tab switches: ${tabSwitches}`;
-      deductBadge.textContent = `Penalty: ${tabSwitches*10}`;
-      showToast("Tab change detected: -10 points.");
-    }
-  });
+        if (!name || !section) {
+            studentInfoMessage.textContent = "Please enter your full name and your year & section.";
+            return;
+        }
 
-  // Anonymous sign-in before starting
-  async function ensureAnonAuth(){
-    if (!auth) return; // in case Firebase failed to init
-    try {
-      if (!auth.currentUser) {
-        await signInAnonymously(auth);
-      }
-      return true;
-    } catch (e) {
-      console.error("Anonymous Auth failed:", e);
-      showToast("Cannot start: Auth is blocked. Please retry or contact your instructor.");
-      return false;
-    }
-  }
+        try {
+            toExamBtn.disabled = true;
+            const result = await checkAttemptLimit(name, section);
+            if (!result.allowed) {
+                studentInfoMessage.textContent = "You have already taken this exam twice. Further attempts are blocked.";
+                toExamBtn.disabled = false;
+                return;
+            }
 
-  // UI events
-  btnStart.addEventListener('click', async ()=>{
-    const nm = inputName.value.trim();
-    const sec = inputSection.value.trim();
-    if(!nm || !sec){ showToast("Please enter your full name and section."); return; }
+            currentStudent.name = name;
+            currentStudent.section = section;
+            currentStudent.attemptNumber = result.attemptNumber;
+            currentStudent.userKey = computeUserKey(name, section);
 
-    // Sign-in anonymously (required by Firestore rules)
-    const ok = await ensureAnonAuth();
-    if (!ok) return;
+            studentMeta.textContent = `${name} · ${section} · Attempt ${result.attemptNumber}/2`;
 
-    who.textContent = `Name: ${nm}`;
-    sectionPill.textContent = `Section: ${sec}`;
-    toQuiz();
-  });
-  inputName.addEventListener('keydown',(e)=>{ if(e.key==='Enter') btnStart.click(); });
-  btnNext.addEventListener('click', next);
-  btnPrev.addEventListener('click', prev);
+            studentInfoScreen.classList.add("hidden");
+            examScreen.classList.remove("hidden");
+            renderQuestion();
+            startTimer();
+        } catch (err) {
+            console.error("Error checking attempts:", err);
+            studentInfoMessage.textContent = "Unable to verify attempts. Please check your connection and try again.";
+        } finally {
+            toExamBtn.disabled = false;
+        }
+    });
 
-  // Keyboard shortcuts
-  document.addEventListener('keydown', (e)=>{
-    if(!stageQuiz.classList.contains('active')) return;
-    if(['1','2','3','4','a','b','c','d','A','B','C','D'].includes(e.key)){
-      const map = { '1':'A','2':'B','3':'C','4':'D' };
-      const v = map[e.key] || e.key.toUpperCase();
-      const radio = choicesEl.querySelector(`input[value="${v}"]`);
-      if(radio){ radio.checked = true; }
-    } else if(e.key === 'ArrowRight'){ next(); }
-      else if(e.key === 'ArrowLeft'){ prev(); }
-  });
+    prevQuestionBtn.addEventListener("click", () => {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            renderQuestion(); // review previous with saved answer
+        }
+    });
+
+    nextQuestionBtn.addEventListener("click", () => {
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            renderQuestion();
+        }
+    });
+
+    submitExamBtn.addEventListener("click", () => {
+        submitExam(false);
+    });
 </script>
 </body>
 </html>
