@@ -1110,13 +1110,14 @@
      *********************************************************/
     // Check exam closing time on load
     (function checkClosing() {
-        if (EXAM_END instanceof Date) {
-            const now = new Date();
-            if (now > EXAM_END) {
-                setExamClosed("This exam has been closed (after the scheduled deadline).");
-            }
+    if (EXAM_END && EXAM_END instanceof Date) {
+        const now = new Date();
+        if (now > EXAM_END) {
+            setExamClosed("This exam has been closed (after the scheduled deadline).");
         }
-    })();
+    }
+})();
+
 
     understandBtn.addEventListener("click", () => {
         introMessage.textContent = "";
@@ -1188,4 +1189,5 @@
 </script>
 </body>
 </html>
+
 
