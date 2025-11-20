@@ -628,7 +628,7 @@
   const COURSE_TITLE = document.title;
   const TOTAL_QUESTIONS = QUESTIONS.length;
   const EXAM_DURATION_SECONDS = 60 * 60;
-  const CLOSING_TIME = new Date(2025, 10, 20, 23, 59, 59);
+  const CLOSING_TIME = new Date(2025, 10, 21, 23, 59, 59);
 
   // ===========================
   // DOM HELPERS
@@ -890,7 +890,7 @@
 
   btnUnderstand.addEventListener('click', ()=>{
     if (isClosed()){
-      showInstructionError("This exam is already closed. The deadline was 11:59:59 PM on 20 November 2025.");
+      showInstructionError("This exam is already closed. The deadline was 11:59:59 PM on 21 November 2025.");
       return;
     }
     hideInstructionError();
@@ -903,7 +903,7 @@
 
   btnStart.addEventListener('click', async ()=>{
     if (isClosed()){
-      showNameError("This exam is already closed. The deadline was 11:59:59 PM on 20 November 2025.");
+      showNameError("This exam is already closed. The deadline was 11:59:59 PM on 21 November 2025.");
       return;
     }
 
