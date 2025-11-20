@@ -1,577 +1,990 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Agricultural Biotechnology Final Exam</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #0f172a;
-            color: #e5e7eb;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-        }
-        .container {
-            max-width: 900px;
-            width: 100%;
-            padding: 24px;
-        }
-        h1, h2, h3 {
-            color: #fbbf24;
-            margin-top: 0;
-        }
-        .card {
-            background: rgba(15,23,42,0.9);
-            border-radius: 16px;
-            padding: 24px 24px 28px;
-            box-shadow: 0 24px 60px rgba(15,23,42,0.8);
-            border: 1px solid rgba(148,163,184,0.4);
-        }
-        .hidden {
-            display: none;
-        }
-        ul {
-            margin-top: 0;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #4b5563;
-            background: #020617;
-            color: #e5e7eb;
-            box-sizing: border-box;
-        }
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #fbbf24;
-            box-shadow: 0 0 0 1px rgba(251,191,36,0.6);
-        }
-        .field-group {
-            margin-bottom: 16px;
-        }
-        .button-row {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 16px;
-        }
-        button {
-            border: none;
-            border-radius: 999px;
-            padding: 10px 20px;
-            font-weight: 600;
-            cursor: pointer;
-            background: linear-gradient(135deg, #fbbf24, #f97316);
-            color: #111827;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        button.secondary {
-            background: transparent;
-            color: #e5e7eb;
-            border: 1px solid #6b7280;
-        }
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        .meta {
-            font-size: 0.9rem;
-            color: #9ca3af;
-            margin-bottom: 8px;
-        }
-        .timer {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: #f97316;
-        }
-        .question-text {
-            font-size: 1.05rem;
-            margin-bottom: 16px;
-        }
-        .options {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .options li {
-            margin-bottom: 8px;
-        }
-        .options label {
-            font-weight: 500;
-        }
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            font-size: 0.95rem;
-        }
-        .status-bar span {
-            color: #9ca3af;
-        }
-        .footer-note {
-            margin-top: 16px;
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-        .error {
-            color: #fecaca;
-            font-size: 0.9rem;
-            margin-top: 8px;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agricultural Biotechnology Final Exam</title>
+<style>
+  @media (max-width: 600px) {
+    body { font-size: 15px; }
+    .wrap { padding: 16px; }
+    .qtext { font-size: 16px; }
+    .choice { padding: 10px; }
+    button { width: 100%; }
+    .footer { flex-direction: column; align-items: stretch; }
+  }
+
+  :root{
+    --bg:#0f172a; --card:#111827; --muted:#64748b; --text:#e5e7eb; --accent:#22c55e; --warn:#f59e0b; --bad:#ef4444; --good:#10b981;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;background:linear-gradient(180deg,#0b1022,#0f172a);color:var(--text)}
+  .wrap{max-width:960px;margin:0 auto;padding:24px}
+  .card{background:linear-gradient(180deg,#0b1220,#0d1426);border:1px solid #1f2937;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  header{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:16px 20px;border-bottom:1px solid #1f2937}
+  header .meta{display:flex;gap:16px;flex-wrap:wrap}
+  .pill{padding:6px 10px;border-radius:999px;background:#111827;color:#cbd5e1;border:1px solid #1f2937;font-size:12px}
+  .content{padding:20px}
+  h1{margin:0;font-size:18px;color:#e2e8f0}
+  h2{margin:0 0 8px 0;font-size:16px;color:#e2e8f0}
+  .instructions-stage, .name-stage, .quiz-stage, .result-stage{display:none}
+  .active{display:block}
+  .field{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+  input[type="text"]{padding:12px 14px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e5e7eb;flex:1;min-width:220px}
+  button{padding:12px 16px;border:1px solid #263042;border-radius:12px;background:#0b1326;color:#e5e7eb;cursor:pointer}
+  button.primary{background:linear-gradient(180deg,#126d3a,#0d5a30);border-color:#144b2e}
+  button.warn{background:linear-gradient(180deg,#8a580c,#6f460a);border-color:#6b3b06}
+  button:hover{filter:brightness(1.08)}
+  .qtext{font-size:18px;line-height:1.5;margin-bottom:16px}
+  .choices{display:grid;gap:10px}
+  .choice{display:flex;gap:10px;align-items:flex-start;background:#0b1220;border:1px solid #1f2937;border-radius:12px;padding:12px}
+  .choice input{margin-top:3px}
+  .footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px}
+  .progress{height:8px;background:#0f172a;border:1px solid #1f2937;border-radius:999px;overflow:hidden;margin-bottom:12px}
+  .bar{height:100%;background:linear-gradient(90deg,#22c55e,#16a34a)}
+  .toast{position:fixed;right:18px;bottom:18px;background:#111827;border:1px solid #334155;border-radius:12px;padding:12px 14px;color:#e5e7eb;opacity:0;transform:translateY(8px);transition:.25s;z-index:9999}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .muted{color:#94a3b8}
+  .small{font-size:12px}
+  .error{color:#fecaca;font-size:13px;margin-top:6px}
+</style>
 </head>
 <body>
-<div class="container">
-    <!-- STEP 1: Instructions -->
-    <div id="step1" class="card">
-        <h1>Final Examination Instructions</h1>
-        <p class="meta">
-            Please read everything carefully before proceeding. By clicking <strong>"I understand"</strong>, you agree to follow all exam rules.
+<div class="wrap">
+  <div class="card">
+    <header>
+      <h1>Agricultural Biotechnology Final Exam</h1>
+      <div class="meta">
+        <span class="pill" id="who">Name: —</span>
+        <span class="pill" id="ys">Year/Section: —</span>
+        <span class="pill" id="timer">Time: 60:00</span>
+        <span class="pill" id="counter">Q: — / 50</span>
+      </div>
+    </header>
+    <div class="content">
+      <!-- Stage 0: Instructions -->
+      <section class="instructions-stage active" id="stageInstructions">
+        <h2>Exam Instructions</h2>
+        <p class="muted small">
+          Please read everything carefully before proceeding. By clicking <b>"I understand"</b>, you agree to follow all exam rules.
         </p>
-        <ul>
-            <li>The exam session is <strong>screen recorded</strong>.</li>
-            <li>The time limit is <strong>1 hour</strong>.</li>
-            <li>You may take the exam <strong>twice only</strong>. After your second submission, all further attempts will be blocked.</li>
-            <li>At <strong>11:59:59 PM, 20 November 2025</strong>, this exam link will be <strong>closed</strong>.</li>
+        <ul class="muted small">
+          <li>This exam is <b>screen recorded</b>.</li>
+          <li>The time limit is <b>1 hour</b>.</li>
+          <li>You may take the exam <b>twice</b>. After your second take, all attempts will be blocked.</li>
+          <li>The link will be closed at <b>11:59:59 PM on 20 November 2025</b>.</li>
         </ul>
-        <p class="footer-note">
-            Note: Do not refresh the page while taking the exam. Make sure you have a stable internet connection.
+        <p class="muted small">
+          Do not refresh or close the tab while taking the exam. Make sure you have a stable internet connection.
         </p>
-        <div class="button-row">
-            <button id="understandBtn">I understand</button>
-        </div>
-        <p id="closingMessage" class="error hidden"></p>
-    </div>
+        <button class="primary" id="btnUnderstand">I understand</button>
+        <div id="instructionError" class="error" style="display:none"></div>
+      </section>
 
-    <!-- STEP 1b: Student info -->
-    <div id="studentInfoCard" class="card hidden">
+      <!-- Stage 1: Name & Section -->
+      <section class="name-stage" id="stageName">
         <h2>Student Information</h2>
-        <div class="field-group">
-            <label for="studentName">Full Name</label>
-            <input type="text" id="studentName" placeholder="e.g. Juan Dela Cruz" />
+        <div class="field">
+          <input type="text" id="studentName" placeholder="Full name (e.g., Juan Dela Cruz)" />
+          <input type="text" id="yearSection" placeholder="Year & Section (e.g., BS Agri 2A)" />
         </div>
-        <div class="field-group">
-            <label for="studentSection">Year and Section</label>
-            <input type="text" id="studentSection" placeholder="e.g. BSAgri 3A" />
-        </div>
-        <p class="footer-note">
-            Make sure your name and section are correct. These will appear on your exam record.
+        <p class="muted small">
+          Make sure your name and year/section are correct. These will appear in the exam records.
         </p>
-        <div id="infoError" class="error hidden"></div>
-        <div class="button-row">
-            <button class="secondary" id="backToInstructionsBtn">Back</button>
-            <button id="startExamBtn">Next</button>
+        <div id="nameError" class="error" style="display:none"></div>
+        <div class="footer">
+          <button id="btnBackToInstructions">Back</button>
+          <button class="primary" id="btnStart">Next</button>
         </div>
+      </section>
+
+      <!-- Stage 2: Quiz -->
+      <section class="quiz-stage" id="stageQuiz">
+        <div class="progress" aria-hidden="true"><div class="bar" id="bar" style="width:0%"></div></div>
+        <p class="qtext" id="qtext"></p>
+        <div class="choices" id="choices"></div>
+        <div id="questionError" class="error" style="display:none"></div>
+        <div class="footer">
+          <button id="btnPrev">Review</button>
+          <div>
+            <button id="btnNext" class="primary">Next</button>
+            <button id="btnSubmit" class="primary" style="display:none">Submit</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stage 3: Results -->
+      <section class="result-stage" id="stageResult">
+        <h2>Submission Complete ✅</h2>
+        <p><b id="resName"></b> (<span id="resYS"></span>), your exam has been submitted.</p>
+        <p>Score: <b id="resScore"></b> / 50</p>
+        <p class="muted small">Your detailed answer sheet (chosen answers and correct answers) was saved securely to the database.</p>
+      </section>
     </div>
-
-    <!-- STEP 2: Exam -->
-    <div id="examCard" class="card hidden">
-        <div class="status-bar">
-            <div>
-                <span id="courseLabel"></span><br />
-                <span id="studentLabel"></span>
-            </div>
-            <div>
-                <span>Time remaining:</span>
-                <span class="timer" id="timerDisplay">60:00</span>
-            </div>
-        </div>
-
-        <h2 id="questionHeader">Question</h2>
-        <p class="question-text" id="questionText"></p>
-        <ul class="options" id="optionsList"></ul>
-        <div id="questionError" class="error hidden"></div>
-
-        <div class="button-row">
-            <button class="secondary" id="reviewBtn">Review</button>
-            <button id="nextBtn">Next</button>
-            <button id="submitBtn" class="hidden">Submit</button>
-        </div>
-        <p class="footer-note">
-            Use <strong>Review</strong> to go back to the previous question. Your chosen answers are remembered.
-        </p>
-    </div>
+  </div>
 </div>
 
-<!-- Firebase + Exam Logic -->
-<script type="module">
-    // ===============================
-    // 1. FIREBASE INITIALIZATION
-    // ===============================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import {
-        getFirestore,
-        collection,
-        addDoc,
-        query,
-        where,
-        getDocs,
-        serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+<div class="toast" id="toast">Please choose an answer before proceeding.</div>
 
-    // TODO: Replace this with your real Firebase config from the Firebase console.
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY_HERE",
-        authDomain: "YOUR_AUTH_DOMAIN_HERE",
-        projectId: "YOUR_PROJECT_ID_HERE",
-        storageBucket: "YOUR_STORAGE_BUCKET_HERE",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID_HERE",
-        appId: "YOUR_APP_ID_HERE"
+<!-- Firebase (modules) + Exam logic -->
+<script type="module">
+  // ===========================
+  // 🔧 FIREBASE SETUP
+  // ===========================
+  const firebaseConfig = {
+    apiKey: "AIzaSyB-idZOq8h9sVttNdzXE2t8FMoYI_snq7g",
+    authDomain: "kuya-quiz-100.firebaseapp.com",
+    projectId: "kuya-quiz-100",
+    storageBucket: "kuya-quiz-100.appspot.com",
+    messagingSenderId: "74623975270",
+    appId: "1:74623975270:web:dec2b21dbee017292952a7"
+  };
+
+  const canInitFirebase = Object.values(firebaseConfig).every(v => typeof v === 'string' && !v.includes('REPLACE_ME'));
+  let app, db, addDoc, collection, serverTimestamp, signInAnonymously, getAuth, getDocs, query, where;
+  if (canInitFirebase) {
+    const firebase = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const firestore = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const authmod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+    app = firebase.initializeApp(firebaseConfig);
+    db  = firestore.getFirestore(app);
+    addDoc = firestore.addDoc;
+    collection = firestore.collection;
+    serverTimestamp = firestore.serverTimestamp;
+    getDocs = firestore.getDocs;
+    query = firestore.query;
+    where = firestore.where;
+    getAuth = authmod.getAuth;
+    signInAnonymously = authmod.signInAnonymously;
+    try { await signInAnonymously(getAuth(app)); } catch(e) { console.warn("Anon auth failed:", e); }
+  }
+
+  const EXAM_DOC_ID = "KzRzubb5df1TV1gL2RuF";
+  let submissionsCollectionRef = null;
+  if (db && collection) {
+    submissionsCollectionRef = collection(db, "finals-exam", EXAM_DOC_ID, "submissions");
+  }
+
+  // ===========================
+  // QUESTIONS (fixed order)
+  // ===========================
+  const QUESTIONS = [
+  {
+    "num": 1,
+    "q": "Biocon agents such as compost activators are primarily used to:",
+    "A": "Kill all microorganisms in compost",
+    "B": "Speed up the decomposition of organic materials",
+    "C": "Sterilize soil",
+    "D": "Remove all moisture from compost",
+    "ans": "B"
+  },
+  {
+    "num": 2,
+    "q": "Which microorganism group is MOST commonly involved in compost activation and organic waste fermentation?",
+    "A": "Viruses",
+    "B": "Lactic acid bacteria and fungi",
+    "C": "Helminths",
+    "D": "Nematodes",
+    "ans": "B"
+  },
+  {
+    "num": 3,
+    "q": "Why are fermentation agents added to organic fertilizers?",
+    "A": "To make the fertilizer smell good only",
+    "B": "To promote controlled microbial activity that stabilizes nutrients",
+    "C": "To increase the weight artificially",
+    "D": "To remove all nutrients from the compost",
+    "ans": "B"
+  },
+  {
+    "num": 4,
+    "q": "A farmer wants faster composting of rice straw and animal manure. Which practice best applies the use of biocon agents?",
+    "A": "Leaving the pile dry and uncovered",
+    "B": "Spraying a commercial compost activator and maintaining moisture",
+    "C": "Burning the residues on the field",
+    "D": "Adding only synthetic fertilizer",
+    "ans": "B"
+  },
+  {
+    "num": 5,
+    "q": "Lab results show that compost treated with a fermentation agent has higher microbial activity and faster breakdown than untreated compost. What is the MOST logical analysis?",
+    "A": "The activator had no effect",
+    "B": "The activator enhanced microbial activity, improving decomposition",
+    "C": "The activator killed all microbes",
+    "D": "Fermentation agents always reduce compost quality",
+    "ans": "B"
+  },
+  {
+    "num": 6,
+    "q": "Biopharming refers to the use of:",
+    "A": "Traditional plowing methods",
+    "B": "Animals to weed the field",
+    "C": "Crops or animals engineered to produce pharmaceutical products",
+    "D": "Organic fertilizers in farms",
+    "ans": "C"
+  },
+  {
+    "num": 7,
+    "q": "Which is an example of biopharming?",
+    "A": "Using cows to graze grass",
+    "B": "Producing vaccines in transgenic plants",
+    "C": "Applying manure to crops",
+    "D": "Spraying herbicides",
+    "ans": "B"
+  },
+  {
+    "num": 8,
+    "q": "A company uses genetically modified maize to produce a human therapeutic protein. How does this apply biopharming?",
+    "A": "Maize is only used as food",
+    "B": "Maize acts as a factory for pharmaceutical protein production",
+    "C": "Maize is used only as animal feed",
+    "D": "Maize is burned after harvest",
+    "ans": "B"
+  },
+  {
+    "num": 9,
+    "q": "A concern is raised that biopharming crops might unintentionally mix with food crops. What is this mainly an example of?",
+    "A": "Improved biodiversity",
+    "B": "Possible gene flow and contamination risk",
+    "C": "Better food quality",
+    "D": "Guaranteed safety",
+    "ans": "B"
+  },
+  {
+    "num": 10,
+    "q": "A policy maker must decide whether to allow open-field trials of biopharming crops near food production areas. From a regulatory standpoint, how should this be evaluated?",
+    "A": "Approve immediately without risk assessment",
+    "B": "Reject all trials without discussion",
+    "C": "Carefully weigh potential health, environmental, and economic risks versus benefits and require strict biosafety measures",
+    "D": "Allow trials with no monitoring",
+    "ans": "C"
+  },
+  {
+    "num": 11,
+    "q": "Phytoremediation is best defined as the:",
+    "A": "Use of chemicals to remove soil pollutants",
+    "B": "Use of plants to absorb, stabilize, or detoxify contaminants",
+    "C": "Burning contaminated soils",
+    "D": "Deep plowing to bury pollutants",
+    "ans": "B"
+  },
+  {
+    "num": 12,
+    "q": "Which situation is most suitable for phytoremediation?",
+    "A": "Lightly metal-contaminated soil with adequate plant growth",
+    "B": "Extremely radioactive waste only",
+    "C": "Clean, uncontaminated soil",
+    "D": "Deep ocean pollution",
+    "ans": "A"
+  },
+  {
+    "num": 13,
+    "q": "A community uses sunflower to extract heavy metals from contaminated soil. This is an example of:",
+    "A": "Chemical remediation",
+    "B": "Phytoremediation using hyperaccumulator plants",
+    "C": "Soil sterilization",
+    "D": "Salinization",
+    "ans": "B"
+  },
+  {
+    "num": 14,
+    "q": "Soil tests show reduced metal concentration in the upper layer where certain plants were grown. What is the MOST likely analysis?",
+    "A": "Metals disappeared naturally",
+    "B": "Plants absorbed metals, supporting phytoremediation",
+    "C": "Sampling error only",
+    "D": "Metals became more toxic",
+    "ans": "B"
+  },
+  {
+    "num": 15,
+    "q": "When evaluating phytoremediation vs. soil excavation and disposal, which statement is most appropriate from a sustainability standpoint?",
+    "A": "Excavation is always better",
+    "B": "Phytoremediation can be more sustainable where time is available, as it is less disruptive and often cheaper",
+    "C": "Phytoremediation is never effective",
+    "D": "Only excavation protects the environment",
+    "ans": "B"
+  },
+  {
+    "num": 16,
+    "q": "“Fake seeds” in agriculture usually refer to:",
+    "A": "Seeds that are larger than normal",
+    "B": "Seeds with falsified labels or poor genetic and physical quality sold as branded seeds",
+    "C": "Any seed from farmers’ fields",
+    "D": "Seeds with high germination",
+    "ans": "B"
+  },
+  {
+    "num": 17,
+    "q": "Which sign may help a farmer understand that seeds might be fake or spurious?",
+    "A": "Properly sealed, labeled packaging from a registered source",
+    "B": "Very low germination and off-type plants compared with label claims",
+    "C": "Seed tested by accredited labs",
+    "D": "Documentation of certification",
+    "ans": "B"
+  },
+  {
+    "num": 18,
+    "q": "A farmer buys “hybrid rice seeds” from an unknown vendor at a very low price and gets poor, non-uniform yield. How does this situation apply the problem of fake seeds?",
+    "A": "Farmer used high quality certified seeds",
+    "B": "The seed may have been fake or mislabelled, leading to poor performance",
+    "C": "Hybrid seeds always fail",
+    "D": "Low price always means better quality",
+    "ans": "B"
+  },
+  {
+    "num": 19,
+    "q": "Regional data show high incidence of crop failure linked to unregistered seed vendors. What is the most reasonable analysis?",
+    "A": "Registered vendors cause the problem",
+    "B": "Weak regulation and enforcement allow fake seed trade, harming yields",
+    "C": "Seed quality has no effect on yield",
+    "D": "Farmers do not need seed laws",
+    "ans": "B"
+  },
+  {
+    "num": 20,
+    "q": "A government considers stricter penalties and better monitoring for fake seed sellers. From a policy perspective, how should this be evaluated?",
+    "A": "Unnecessary, because seed quality does not matter",
+    "B": "Positive, as it protects farmers, yield, and integrity of seed systems",
+    "C": "Harmful to all stakeholders",
+    "D": "Only important for exporters",
+    "ans": "B"
+  },
+  {
+    "num": 21,
+    "q": "Vaccines in livestock are used primarily to:",
+    "A": "Treat worms",
+    "B": "Prevent specific infectious diseases by stimulating immunity",
+    "C": "Increase body weight instantly",
+    "D": "Reduce water consumption",
+    "ans": "B"
+  },
+  {
+    "num": 22,
+    "q": "Artificial insemination (AI) in cattle is best described as:",
+    "A": "Natural mating by bulls",
+    "B": "Manual insertion of semen into the female reproductive tract using collected semen",
+    "C": "Use of hormones to induce heat",
+    "D": "Surgical removal of ovaries",
+    "ans": "B"
+  },
+  {
+    "num": 23,
+    "q": "Multiple Ovulation and Embryo Transfer (MOET) is a technology that applies biotechnology by:",
+    "A": "Destroying embryos in elite cows",
+    "B": "Producing many embryos from a superior female and transferring them to recipients",
+    "C": "Preventing reproduction",
+    "D": "Reducing genetic gain",
+    "ans": "B"
+  },
+  {
+    "num": 24,
+    "q": "Probiotics are generally defined as:",
+    "A": "Synthetic antibiotics",
+    "B": "Live microorganisms that when administered in adequate amounts confer a health benefit",
+    "C": "Chemical preservatives",
+    "D": "Soil fumigants",
+    "ans": "B"
+  },
+  {
+    "num": 25,
+    "q": "A poultry farmer adds probiotics to feed and later observes improved gut health and reduced diarrhea. What is the MOST logical analysis?",
+    "A": "Probiotics had no role",
+    "B": "Probiotics likely supported beneficial gut microbes, improving health",
+    "C": "Probiotics caused the disease",
+    "D": "Gut health is unrelated to probiotics",
+    "ans": "B"
+  },
+  {
+    "num": 26,
+    "q": "A committee must decide whether to prioritize AI/MOET programs in national breeding plans. From a breeding and resource viewpoint, how should this be evaluated?",
+    "A": "Not useful because natural mating is always superior",
+    "B": "Potentially advantageous because AI/MOET can rapidly spread superior genetics if managed ethically and sustainably",
+    "C": "Always harmful to breeds",
+    "D": "Unrelated to genetic improvement",
+    "ans": "B"
+  },
+  {
+    "num": 27,
+    "q": "One promise of future biotechnology in agriculture is to:",
+    "A": "Produce crops with lower resilience",
+    "B": "Develop stress-tolerant, nutrient-efficient varieties",
+    "C": "Eliminate all biodiversity",
+    "D": "Replace all traditional knowledge",
+    "ans": "B"
+  },
+  {
+    "num": 28,
+    "q": "“Biotech products nearing commercialization” often include crops that:",
+    "A": "Have no useful traits",
+    "B": "May carry traits such as drought tolerance, biofortification, or disease resistance",
+    "C": "Only change plant color",
+    "D": "Remove all natural defenses",
+    "ans": "B"
+  },
+  {
+    "num": 29,
+    "q": "A breeding program uses biotechnology to create rice with enhanced vitamin A content (e.g., biofortified rice). How does this apply biotechnology to public health?",
+    "A": "It ignores nutrition issues",
+    "B": "It aims to reduce micronutrient deficiency in populations dependent on rice",
+    "C": "It reduces yield only",
+    "D": "It targets only cosmetic traits",
+    "ans": "B"
+  },
+  {
+    "num": 30,
+    "q": "Data show that a biotech crop reduces pesticide use but may increase dependence on a few seed suppliers. What is the best analysis of its role in a sustainable future?",
+    "A": "Benefits and risks are both present—less chemical use vs. potential seed access issues",
+    "B": "All biotech crops are always harmful",
+    "C": "Only seed dependence matters",
+    "D": "Only pesticide reduction matters",
+    "ans": "A"
+  },
+  {
+    "num": 31,
+    "q": "When evaluating future biotech options for sustainable agriculture, which reasoning is most appropriate?",
+    "A": "Accept all biotech instantly",
+    "B": "Reject all biotech absolutely",
+    "C": "Carefully assess each product’s ecological, social, and economic impacts relative to alternatives",
+    "D": "Decide only on the basis of short-term profit",
+    "ans": "C"
+  },
+  {
+    "num": 32,
+    "q": "The main purpose of biosafety regulations in biotechnology is to:",
+    "A": "Stop all research",
+    "B": "Ensure safe development, handling, and use of biotech products",
+    "C": "Promote uncontrolled release of GMOs",
+    "D": "Replace traditional agriculture",
+    "ans": "B"
+  },
+  {
+    "num": 33,
+    "q": "Which international agreement is specifically concerned with the transboundary movement of living modified organisms (LMOs)?",
+    "A": "Paris Agreement",
+    "B": "Cartagena Protocol on Biosafety",
+    "C": "Kyoto Protocol",
+    "D": "Basel Convention on Hazardous Wastes",
+    "ans": "B"
+  },
+  {
+    "num": 34,
+    "q": "Local biosafety regulations generally aim to help people understand that:",
+    "A": "Biotech products require no risk assessment",
+    "B": "There is a structured system for risk assessment, approval, and monitoring",
+    "C": "Only foreign experts can decide",
+    "D": "Farmers have no role",
+    "ans": "B"
+  },
+  {
+    "num": 35,
+    "q": "A regulatory body requires environmental risk assessment before releasing a new GM crop. How does this apply the principles behind biosafety laws?",
+    "A": "It ignores ecological concerns",
+    "B": "It operationalizes precaution and risk-based decision making",
+    "C": "It accelerates release without data",
+    "D": "It bans all GM crops automatically",
+    "ans": "B"
+  },
+  {
+    "num": 36,
+    "q": "Monitoring reports show that a regulatory institution lacks capacity and coordination, leading to slow and inconsistent decisions. What is the best analysis?",
+    "A": "Regulation is unnecessary",
+    "B": "Weak institutions undermine effective biosafety governance and trust",
+    "C": "Slow decisions mean better safety",
+    "D": "Institutions are irrelevant",
+    "ans": "B"
+  },
+  {
+    "num": 37,
+    "q": "A national biotech law emphasizes transparency, public participation, and risk-benefit analysis. From a governance viewpoint, how should this be evaluated?",
+    "A": "Negative, because public involvement complicates decisions",
+    "B": "Positive, because it promotes accountability, inclusiveness, and informed decision making",
+    "C": "Neutral, since laws never affect trust",
+    "D": "Unimportant to biosafety",
+    "ans": "B"
+  },
+  {
+    "num": 38,
+    "q": "“Alternatives in biotechnology” can refer to:",
+    "A": "Only chemical-intensive practices",
+    "B": "Using non-GM breeding, integrated pest management, or ecological approaches alongside or instead of GM tools",
+    "C": "Stopping all crop improvement",
+    "D": "Burning crop fields",
+    "ans": "B"
+  },
+  {
+    "num": 39,
+    "q": "A farmer chooses marker-assisted selection and organic pest management instead of GM crops. This is an example of:",
+    "A": "Rejecting all technology",
+    "B": "Using alternative biotechnological and ecological approaches",
+    "C": "Avoiding crop improvement altogether",
+    "D": "Illegal practice",
+    "ans": "B"
+  },
+  {
+    "num": 40,
+    "q": "Comparing GM-based pest resistance with integrated pest management (IPM), which statement shows a balanced analysis?",
+    "A": "GM is always better than IPM",
+    "B": "IPM is always better than GM",
+    "C": "Both approaches have roles; their suitability depends on local ecology, economics, and risk considerations",
+    "D": "Neither approach is useful",
+    "ans": "C"
+  },
+  {
+    "num": 41,
+    "q": "A policy prioritizes only high-tech biotech while ignoring local, low-cost alternatives. From a sustainability and equity perspective, how should this be evaluated?",
+    "A": "Ideal for all farmers",
+    "B": "Potentially inequitable and less sustainable for resource-poor farmers",
+    "C": "Neutral",
+    "D": "Always the best choice",
+    "ans": "B"
+  },
+  {
+    "num": 42,
+    "q": "Which statement best describes the role of institutions (universities, research centers, regulators) in biotechnology?",
+    "A": "They only sell products",
+    "B": "They generate knowledge, assess risks, train people, and help guide safe application",
+    "C": "They stop all innovation",
+    "D": "They only serve private companies",
+    "ans": "B"
+  },
+  {
+    "num": 43,
+    "q": "A research institute develops a probiotic-based compost activator to help small farmers. How does this apply biotechnology for sustainability?",
+    "A": "It increases chemical pesticide use",
+    "B": "It offers a biological tool to enhance soil health and waste recycling",
+    "C": "It reduces soil organic matter",
+    "D": "It encourages burning residues",
+    "ans": "B"
+  },
+  {
+    "num": 44,
+    "q": "Data show that farms using probiotics, phytoremediation, and compost activators have improved soil quality and reduced chemical inputs. What can be reasonably concluded?",
+    "A": "These biotechnologies are harmful",
+    "B": "These biotechnologies can contribute to more sustainable soil management",
+    "C": "Soil quality is unrelated to management",
+    "D": "Chemicals are always superior",
+    "ans": "B"
+  },
+  {
+    "num": 45,
+    "q": "When selecting between a pharma-producing GM crop (biopharming) and conventional pharmaceutical production in factories, what is a key factor to evaluate?",
+    "A": "Only the color of the plant",
+    "B": "Environmental, biosafety, containment, and economic considerations of each route",
+    "C": "The company logo",
+    "D": "Popularity on social media",
+    "ans": "B"
+  },
+  {
+    "num": 46,
+    "q": "In AI/MOET programs, which aspect is MOST important to remember in planning? Level of thinking: Remembering",
+    "A": "Only coat color of animals",
+    "B": "Selection of genetically superior and healthy donors and sires",
+    "C": "Random selection of animals",
+    "D": "Ignoring disease control",
+    "ans": "B"
+  },
+  {
+    "num": 47,
+    "q": "A biopharming crop is proposed to be grown in a region with weak regulatory capacity and high risk of mixing with food crops. What is the MOST appropriate analysis?",
+    "A": "No concern because biotech is always safe",
+    "B": "The context increases biosafety and contamination risks and demands strong precaution",
+    "C": "It guarantees better food quality",
+    "D": "It has only economic benefits",
+    "ans": "B"
+  },
+  {
+    "num": 48,
+    "q": "A multi-stakeholder platform (farmers, NGOs, scientists, regulators) is created to discuss GM crop adoption. From a governance viewpoint, how should this be evaluated?",
+    "A": "Unnecessary delay",
+    "B": "Valuable for incorporating diverse perspectives and building social legitimacy",
+    "C": "Always anti-technology",
+    "D": "Irrelevant to decision-making",
+    "ans": "B"
+  },
+  {
+    "num": 49,
+    "q": "Which of the following is a correct understanding of how vaccines differ from probiotics in livestock production?",
+    "A": "Vaccines directly kill pathogens; probiotics are only vitamins",
+    "B": "Vaccines stimulate specific immune responses; probiotics support gut health and microbial balance",
+    "C": "Both are exactly the same",
+    "D": "Probiotics always replace vaccination",
+    "ans": "B"
+  },
+  {
+    "num": 50,
+    "q": "A country invests in regulations, training, and infrastructure for biosafety while also supporting alternative and low-cost biotechnologies. From a long-term sustainability perspective, how should this strategy be evaluated?",
+    "A": "Wasteful, since only one technology is needed",
+    "B": "Positive, because it balances innovation, safety, and inclusiveness for different types of farmers",
+    "C": "Harmful, as it limits choices",
+    "D": "Neutral, with no real impact",
+    "ans": "B"
+  }
+];
+
+
+  // ===========================
+  // EXAM CONFIG
+  // ===========================
+  const COURSE_TITLE = document.title;
+  const TOTAL_QUESTIONS = QUESTIONS.length;
+  const EXAM_DURATION_SECONDS = 60 * 60;
+  const CLOSING_TIME = new Date(2025, 10, 20, 23, 59, 59);
+
+  // ===========================
+  // DOM HELPERS
+  // ===========================
+  const el = id => document.getElementById(id);
+
+  const stageInstructions = el('stageInstructions');
+  const stageName = el('stageName');
+  const stageQuiz = el('stageQuiz');
+  const stageResult = el('stageResult');
+
+  const btnUnderstand = el('btnUnderstand');
+  const btnBackToInstructions = el('btnBackToInstructions');
+  const btnStart = el('btnStart');
+  const btnPrev = el('btnPrev');
+  const btnNext = el('btnNext');
+  const btnSubmit = el('btnSubmit');
+
+  const inputName = el('studentName');
+  const inputYS = el('yearSection');
+  const nameError = el('nameError');
+  const instructionError = el('instructionError');
+  const questionError = el('questionError');
+
+  const qtext = el('qtext');
+  const choicesEl = el('choices');
+  const counter = el('counter');
+  const who = el('who');
+  const ysPill = el('ys');
+  const timerEl = el('timer');
+  const bar = el('bar');
+  const toast = el('toast');
+
+  const resName = el('resName');
+  const resYS = el('resYS');
+  const resScore = el('resScore');
+
+  // ===========================
+  // STATE
+  // ===========================
+  let idx = 0;
+  let answers = Array(TOTAL_QUESTIONS).fill(null);
+  let started = false;
+  let secondsLeft = EXAM_DURATION_SECONDS;
+  let timerHandle = null;
+  let submitting = false;
+
+  // ===========================
+  // UTILS
+  // ===========================
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 1800);
+  }
+
+  function fmtTime(seconds){
+    const m = Math.floor(seconds/60), s = seconds%60;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  function isClosed(){
+    const now = new Date();
+    return now > CLOSING_TIME;
+  }
+
+  function showInstructionError(msg){
+    instructionError.textContent = msg;
+    instructionError.style.display = 'block';
+  }
+
+  function hideInstructionError(){
+    instructionError.style.display = 'none';
+  }
+
+  function showNameError(msg){
+    nameError.textContent = msg;
+    nameError.style.display = 'block';
+  }
+
+  function hideNameError(){
+    nameError.style.display = 'none';
+  }
+
+  function showQuestionError(msg){
+    questionError.textContent = msg;
+    questionError.style.display = 'block';
+  }
+
+  function hideQuestionError(){
+    questionError.style.display = 'none';
+  }
+
+  function renderQuestion(){
+    counter.textContent = `Q: ${idx+1} / ${TOTAL_QUESTIONS}`;
+    const q = QUESTIONS[idx];
+    qtext.textContent = q.q;
+    choicesEl.innerHTML = '';
+    ['A','B','C','D'].forEach(letter=>{
+      const wrap = document.createElement('label');
+      wrap.className='choice';
+      wrap.innerHTML = `
+        <input type="radio" name="opt" value="${letter}">
+        <div><b>${letter}.</b> ${q[letter]}</div>
+      `;
+      choicesEl.appendChild(wrap);
+    });
+    if(answers[idx]){
+      const sel = choicesEl.querySelector(`input[value="${answers[idx]}"]`);
+      if(sel) sel.checked = true;
+    }
+    btnPrev.disabled = (idx===0);
+    if (idx === TOTAL_QUESTIONS - 1) {
+      btnNext.style.display = 'none';
+      btnSubmit.style.display = 'inline-block';
+    } else {
+      btnNext.style.display = 'inline-block';
+      btnSubmit.style.display = 'none';
+    }
+    bar.style.width = `${(idx/Math.max(1,(TOTAL_QUESTIONS-1)))*100}%`;
+    hideQuestionError();
+  }
+
+  function getSelected(){
+    const sel = choicesEl.querySelector('input[name="opt"]:checked');
+    return sel ? sel.value : null;
+  }
+
+  function goToStage(stage){
+    stageInstructions.classList.remove('active');
+    stageName.classList.remove('active');
+    stageQuiz.classList.remove('active');
+    stageResult.classList.remove('active');
+    stage.classList.add('active');
+  }
+
+  function buildAnswerSheet(score){
+    return QUESTIONS.map((q, i) => {
+      const chosen = answers[i];
+      return {
+        questionNumber: q.num,
+        question: q.q,
+        options: {
+          A: q.A,
+          B: q.B,
+          C: q.C,
+          D: q.D
+        },
+        correctAnswer: q.ans,
+        chosenAnswer: chosen,
+        isCorrect: chosen === q.ans
+      };
+    });
+  }
+
+  async function getAttemptCount(name, section){
+    if (!submissionsCollectionRef || !getDocs || !query || !where) return 0;
+    try {
+      const qy = query(
+        submissionsCollectionRef,
+        where("Name", "==", name),
+        where("section", "==", section),
+        where("Course", "==", COURSE_TITLE)
+      );
+      const snap = await getDocs(qy);
+      return snap.size;
+    } catch (e) {
+      console.warn("Attempt count check failed:", e);
+      return 0;
+    }
+  }
+
+  function computeScore(){
+    let score = 0;
+    for (let i=0;i<TOTAL_QUESTIONS;i++) {
+      if (answers[i] && answers[i] === QUESTIONS[i].ans) score++;
+    }
+    return score;
+  }
+
+  function applyResultsToUI(studentName, yearSection, score){
+    resName.textContent = studentName;
+    resYS.textContent = yearSection;
+    resScore.textContent = score;
+  }
+
+  function startTimer(){
+    secondsLeft = EXAM_DURATION_SECONDS;
+    timerEl.textContent = `Time: ${fmtTime(secondsLeft)}`;
+    timerHandle = setInterval(()=>{
+      secondsLeft--;
+      if (secondsLeft <= 0){
+        secondsLeft = 0;
+        timerEl.textContent = `Time: 00:00`;
+        clearInterval(timerHandle);
+        if (!submitting){
+          const sel = getSelected();
+          if (sel) answers[idx] = sel;
+          submitExam(true);
+        }
+      } else {
+        timerEl.textContent = `Time: ${fmtTime(secondsLeft)}`;
+      }
+    },1000);
+  }
+
+  function stopTimer(){
+    if (timerHandle){
+      clearInterval(timerHandle);
+      timerHandle = null;
+    }
+  }
+
+  async function submitExam(autoSubmitted){
+    if (submitting) return;
+    submitting = true;
+    btnPrev.disabled = true;
+    btnNext.disabled = true;
+    hideQuestionError();
+    stopTimer();
+
+    const studentName = inputName.value.trim();
+    const yearSection = inputYS.value.trim();
+    const score = computeScore();
+    const answerSheet = buildAnswerSheet(score);
+
+    const payload = {
+      Course: COURSE_TITLE,
+      submissionDate: serverTimestamp ? serverTimestamp() : new Date().toISOString(),
+      Score: score,
+      Name: studentName,
+      secondsRemaining: secondsLeft,
+      section: yearSection,
+      answers: answerSheet
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // finals-exam collection -> specific exam document -> submissions subcollection
-    const EXAM_DOC_ID = "KzRzubb5df1TV1gL2RuF"; // from your screenshot
-    const submissionsCollectionRef = collection(db, "finals-exam", EXAM_DOC_ID, "submissions");
-
-    // ===============================
-    // 2. EXAM CONFIG
-    // ===============================
-    const courseTitle = document.title; // e.g. "Agricultural Biotechnology Final Exam"
-    const examDurationSeconds = 60 * 60; // 1 hour
-    const examClosingTime = new Date(2025, 10, 20, 23, 59, 59); // NOTE: month is 0-based (10 = November)
-
-    // Define your questions here.
-    // Edit this array to match your real exam questions and choices.
-    const questions = [
-        {
-            text: "Sample question 1: Which letter comes first in the English alphabet?",
-            options: ["C", "B", "A", "D"],
-            correctIndex: 2
-        },
-        {
-            text: "Sample question 2: 2 + 2 = ?",
-            options: ["3", "4", "5", "22"],
-            correctIndex: 1
-        },
-        {
-            text: "Sample question 3: Which of the following is a color?",
-            options: ["Dog", "Blue", "Rice", "Chair"],
-            correctIndex: 1
-        }
-    ];
-
-    // ===============================
-    // 3. STATE
-    // ===============================
-    let currentQuestionIndex = 0;
-    let answers = Array(questions.length).fill(null); // store selected option index
-    let remainingSeconds = examDurationSeconds;
-    let timerInterval = null;
-    let studentName = "";
-    let studentSection = "";
-
-    // ===============================
-    // 4. DOM ELEMENTS
-    // ===============================
-    const step1Card = document.getElementById("step1");
-    const studentInfoCard = document.getElementById("studentInfoCard");
-    const examCard = document.getElementById("examCard");
-
-    const understandBtn = document.getElementById("understandBtn");
-    const backToInstructionsBtn = document.getElementById("backToInstructionsBtn");
-    const startExamBtn = document.getElementById("startExamBtn");
-
-    const studentNameInput = document.getElementById("studentName");
-    const studentSectionInput = document.getElementById("studentSection");
-    const infoError = document.getElementById("infoError");
-
-    const closingMessage = document.getElementById("closingMessage");
-
-    const courseLabel = document.getElementById("courseLabel");
-    const studentLabel = document.getElementById("studentLabel");
-    const timerDisplay = document.getElementById("timerDisplay");
-
-    const questionHeader = document.getElementById("questionHeader");
-    const questionText = document.getElementById("questionText");
-    const optionsList = document.getElementById("optionsList");
-    const questionError = document.getElementById("questionError");
-
-    const reviewBtn = document.getElementById("reviewBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const submitBtn = document.getElementById("submitBtn");
-
-    // ===============================
-    // 5. UTILS
-    // ===============================
-    function isExamClosed() {
-        const now = new Date();
-        return now > examClosingTime;
+    try {
+      if (submissionsCollectionRef && addDoc){
+        await addDoc(submissionsCollectionRef, payload);
+      } else {
+        console.warn("Firestore not initialized; data not saved.");
+      }
+      alert("Your exam has been submitted.");
+      btnSubmit.disabled = true;
+      applyResultsToUI(studentName, yearSection, score);
+      goToStage(stageResult);
+    } catch (e) {
+      console.error("Submission failed:", e);
+      alert("submission fail, please try again");
+      btnPrev.disabled = (idx===0);
+      btnNext.disabled = false;
+      submitting = false;
+      startTimer();
+      return;
     }
 
-    function updateClosingMessageIfNeeded() {
-        if (isExamClosed()) {
-            closingMessage.textContent = "This exam is now closed. The deadline was 11:59:59 PM on 20 November 2025.";
-            closingMessage.classList.remove("hidden");
-            understandBtn.disabled = true;
-            startExamBtn.disabled = true;
-        }
+    submitting = false;
+  }
+
+  btnUnderstand.addEventListener('click', ()=>{
+    if (isClosed()){
+      showInstructionError("This exam is already closed. The deadline was 11:59:59 PM on 20 November 2025.");
+      return;
+    }
+    hideInstructionError();
+    goToStage(stageName);
+  });
+
+  btnBackToInstructions.addEventListener('click', ()=>{
+    goToStage(stageInstructions);
+  });
+
+  btnStart.addEventListener('click', async ()=>{
+    if (isClosed()){
+      showNameError("This exam is already closed. The deadline was 11:59:59 PM on 20 November 2025.");
+      return;
     }
 
-    function formatTime(seconds) {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        const mm = m.toString().padStart(2, "0");
-        const ss = s.toString().padStart(2, "0");
-        return mm + ":" + ss;
+    const nm = inputName.value.trim();
+    const ys = inputYS.value.trim();
+    if (!nm){
+      showNameError("Please enter your full name.");
+      return;
+    }
+    if (!ys){
+      showNameError("Please enter your Year & Section.");
+      return;
+    }
+    hideNameError();
+
+    const attempts = await getAttemptCount(nm, ys);
+    if (attempts >= 2){
+      showNameError("You have already used your 2 allowed attempts for this exam. Further attempts are blocked.");
+      return;
     }
 
-    function renderQuestion(index) {
-        const q = questions[index];
-        questionHeader.textContent = "Question " + (index + 1) + " of " + questions.length;
-        questionText.textContent = q.text;
+    who.textContent = `Name: ${nm}`;
+    ysPill.textContent = `Year/Section: ${ys}`;
 
-        // Clear previous options
-        optionsList.innerHTML = "";
+    idx = 0;
+    answers = Array(TOTAL_QUESTIONS).fill(null);
 
-        q.options.forEach((opt, optIndex) => {
-            const li = document.createElement("li");
-            const label = document.createElement("label");
-            const input = document.createElement("input");
-            input.type = "radio";
-            input.name = "option";
-            input.value = optIndex.toString();
+    goToStage(stageQuiz);
+    started = true;
+    renderQuestion();
+    startTimer();
+  });
 
-            if (answers[index] === optIndex) {
-                input.checked = true;
-            }
-
-            label.appendChild(input);
-            label.appendChild(document.createTextNode(" " + opt));
-            li.appendChild(label);
-            optionsList.appendChild(li);
-        });
-
-        // Handle buttons visibility
-        reviewBtn.disabled = index === 0;
-        nextBtn.classList.toggle("hidden", index === questions.length - 1);
-        submitBtn.classList.toggle("hidden", index !== questions.length - 1);
-
-        questionError.classList.add("hidden");
-        questionError.textContent = "";
+  function handleNext(){
+    const sel = getSelected();
+    if(!sel){
+      showQuestionError("Please choose an answer before proceeding.");
+      return;
     }
-
-    function saveCurrentAnswer() {
-        const selected = document.querySelector('input[name="option"]:checked');
-        if (selected) {
-            const selectedIndex = parseInt(selected.value, 10);
-            answers[currentQuestionIndex] = selectedIndex;
-            return true;
-        } else {
-            return false;
-        }
+    answers[idx] = sel;
+    if (idx < TOTAL_QUESTIONS - 1){
+      idx++;
+      renderQuestion();
     }
+  }
 
-    function startTimer() {
-        remainingSeconds = examDurationSeconds;
-        timerDisplay.textContent = formatTime(remainingSeconds);
-
-        timerInterval = setInterval(() => {
-            remainingSeconds -= 1;
-            if (remainingSeconds < 0) remainingSeconds = 0;
-            timerDisplay.textContent = formatTime(remainingSeconds);
-
-            if (remainingSeconds <= 0) {
-                clearInterval(timerInterval);
-                alert("Time is up! Your exam will be submitted automatically.");
-                handleSubmit(true); // auto-submit flag
-            }
-        }, 1000);
+  function handlePrev(){
+    if(idx>0){
+      const sel = getSelected();
+      if(sel) answers[idx] = sel;
+      idx--;
+      renderQuestion();
     }
+  }
 
-    function stopTimer() {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
+  btnNext.addEventListener('click', handleNext);
+  btnPrev.addEventListener('click', handlePrev);
+
+  btnSubmit.addEventListener('click', ()=>{
+    const sel = getSelected();
+    if(!sel){
+      showQuestionError("Please choose an answer before submitting.");
+      return;
     }
+    answers[idx] = sel;
+    submitExam(false);
+  });
 
-    function computeScore() {
-        let score = 0;
-        for (let i = 0; i < questions.length; i++) {
-            if (answers[i] === questions[i].correctIndex) {
-                score += 1;
-            }
-        }
-        return score;
-    }
+  document.addEventListener('keydown', (e)=>{
+    if(!stageQuiz.classList.contains('active')) return;
+    if(['1','2','3','4','a','b','c','d','A','B','C','D'].includes(e.key)){
+      const map = { '1':'A','2':'B','3':'C','4':'D' };
+      const v = map[e.key] || e.key.toUpperCase();
+      const radio = choicesEl.querySelector(`input[value="${v}"]`);
+      if(radio) radio.checked = true;
+    } else if(e.key === 'ArrowRight'){ handleNext(); }
+      else if(e.key === 'ArrowLeft'){ handlePrev(); }
+  });
 
-    function buildAnswerSheet() {
-        return questions.map((q, idx) => {
-            const chosenIndex = answers[idx];
-            return {
-                questionNumber: idx + 1,
-                question: q.text,
-                chosenOption: chosenIndex != null ? q.options[chosenIndex] : null,
-                chosenOptionIndex: chosenIndex != null ? chosenIndex : null,
-                correctOption: q.options[q.correctIndex],
-                correctOptionIndex: q.correctIndex,
-                isCorrect: chosenIndex === q.correctIndex
-            };
-        });
-    }
-
-    async function getAttemptCount(name, section) {
-        try {
-            const attemptsQuery = query(
-                submissionsCollectionRef,
-                where("Name", "==", name),
-                where("section", "==", section),
-                where("Course", "==", courseTitle)
-            );
-            const snapshot = await getDocs(attemptsQuery);
-            return snapshot.size;
-        } catch (err) {
-            console.error("Error checking attempts:", err);
-            // In case of error, allow attempt (returns 0 so we don't block).
-            return 0;
-        }
-    }
-
-    // ===============================
-    // 6. EVENT HANDLERS
-    // ===============================
-    understandBtn.addEventListener("click", () => {
-        if (isExamClosed()) {
-            updateClosingMessageIfNeeded();
-            return;
-        }
-        step1Card.classList.add("hidden");
-        studentInfoCard.classList.remove("hidden");
-    });
-
-    backToInstructionsBtn.addEventListener("click", () => {
-        studentInfoCard.classList.add("hidden");
-        step1Card.classList.remove("hidden");
-    });
-
-    startExamBtn.addEventListener("click", async () => {
-        if (isExamClosed()) {
-            updateClosingMessageIfNeeded();
-            return;
-        }
-
-        studentName = studentNameInput.value.trim();
-        studentSection = studentSectionInput.value.trim();
-
-        if (!studentName || !studentSection) {
-            infoError.textContent = "Please enter both your full name and your year & section.";
-            infoError.classList.remove("hidden");
-            return;
-        } else {
-            infoError.classList.add("hidden");
-        }
-
-        // Check attempt count from Firestore
-        const attempts = await getAttemptCount(studentName, studentSection);
-        if (attempts >= 2) {
-            infoError.textContent = "You have already used your 2 allowed attempts for this exam. Further attempts are blocked.";
-            infoError.classList.remove("hidden");
-            return;
-        }
-
-        // Proceed to exam
-        studentInfoCard.classList.add("hidden");
-        examCard.classList.remove("hidden");
-
-        courseLabel.textContent = courseTitle;
-        studentLabel.textContent = studentName + " | " + studentSection;
-
-        currentQuestionIndex = 0;
-        answers = Array(questions.length).fill(null);
-        renderQuestion(currentQuestionIndex);
-        startTimer();
-    });
-
-    reviewBtn.addEventListener("click", () => {
-        if (currentQuestionIndex === 0) return;
-        // Save current answer
-        saveCurrentAnswer();
-        currentQuestionIndex -= 1;
-        renderQuestion(currentQuestionIndex);
-    });
-
-    nextBtn.addEventListener("click", () => {
-        // Ensure an answer is selected
-        if (!saveCurrentAnswer()) {
-            questionError.textContent = "Please choose an answer before proceeding to the next question.";
-            questionError.classList.remove("hidden");
-            return;
-        }
-        questionError.classList.add("hidden");
-
-        if (currentQuestionIndex < questions.length - 1) {
-            currentQuestionIndex += 1;
-            renderQuestion(currentQuestionIndex);
-        }
-    });
-
-    submitBtn.addEventListener("click", () => {
-        if (!saveCurrentAnswer()) {
-            questionError.textContent = "Please choose an answer before submitting.";
-            questionError.classList.remove("hidden");
-            return;
-        }
-        questionError.classList.add("hidden");
-        handleSubmit(false);
-    });
-
-    // ===============================
-    // 7. SUBMISSION
-    // ===============================
-    async function handleSubmit(autoSubmitted) {
-        // Avoid double calls from manual and auto submissions
-        submitBtn.disabled = true;
-        nextBtn.disabled = true;
-        reviewBtn.disabled = true;
-
-        stopTimer();
-
-        const score = computeScore();
-        const answerSheet = buildAnswerSheet();
-
-        const payload = {
-            Course: courseTitle,
-            submissionDate: serverTimestamp(),
-            Score: score,
-            Name: studentName,
-            secondsRemaining: remainingSeconds,
-            section: studentSection,
-            answers: answerSheet,
-            autoSubmitted: autoSubmitted
-        };
-
-        try {
-            await addDoc(submissionsCollectionRef, payload);
-            alert("Your exam has been submitted.");
-            // On success, permanently disable submit button
-            submitBtn.disabled = true;
-        } catch (error) {
-            console.error("Submission error:", error);
-            alert("Submission fail, please try again.");
-            // Re-enable buttons so student can retry
-            submitBtn.disabled = false;
-            nextBtn.disabled = false;
-            reviewBtn.disabled = false;
-        }
-    }
-
-    // Initial check for closing time on load
-    updateClosingMessageIfNeeded();
+  timerEl.textContent = `Time: ${fmtTime(secondsLeft)}`;
+  counter.textContent = `Q: — / ${TOTAL_QUESTIONS}`;
 </script>
 </body>
 </html>
