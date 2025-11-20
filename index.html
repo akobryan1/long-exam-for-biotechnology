@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -141,7 +142,7 @@
   };
 
   const canInitFirebase = Object.values(firebaseConfig).every(v => typeof v === 'string' && !v.includes('REPLACE_ME'));
-  let app, db, addDoc, collection, serverTimestamp, signInAnonymously, getAuth, getDocs, query, where;
+  let app, db, addDoc, collection, serverTimestamp, signInAnonymously, getAuth, getDocs, doc, setDoc;
   if (canInitFirebase) {
     const firebase = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
     const firestore = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
@@ -152,18 +153,15 @@
     collection = firestore.collection;
     serverTimestamp = firestore.serverTimestamp;
     getDocs = firestore.getDocs;
-    query = firestore.query;
-    where = firestore.where;
+    doc = firestore.doc;
+    setDoc = firestore.setDoc;
     getAuth = authmod.getAuth;
     signInAnonymously = authmod.signInAnonymously;
     try { await signInAnonymously(getAuth(app)); } catch(e) { console.warn("Anon auth failed:", e); }
   }
 
   const EXAM_DOC_ID = "KzRzubb5df1TV1gL2RuF";
-  let submissionsCollectionRef = null;
-  if (db && collection) {
-    submissionsCollectionRef = collection(db, "finals-exam", EXAM_DOC_ID, "submissions");
-  }
+  const COURSE_TITLE = document.title;
 
   // ===========================
   // QUESTIONS (fixed order)
@@ -625,9 +623,9 @@
   // ===========================
   // EXAM CONFIG
   // ===========================
-  const COURSE_TITLE = document.title;
   const TOTAL_QUESTIONS = QUESTIONS.length;
   const EXAM_DURATION_SECONDS = 60 * 60;
+  // Note: month is 0-based -> 10 = November
   const CLOSING_TIME = new Date(2025, 10, 21, 23, 59, 59);
 
   // ===========================
@@ -671,10 +669,10 @@
   // ===========================
   let idx = 0;
   let answers = Array(TOTAL_QUESTIONS).fill(null);
-  let started = false;
   let secondsLeft = EXAM_DURATION_SECONDS;
   let timerHandle = null;
   let submitting = false;
+  let currentStudentId = null;
 
   // ===========================
   // UTILS
@@ -737,7 +735,7 @@
       choicesEl.appendChild(wrap);
     });
     if(answers[idx]){
-      const sel = choicesEl.querySelector(`input[value="${answers[idx]}"]`);
+      const sel = choicesEl.querySelector(\`input[value="\${answers[idx]}"]\`);
       if(sel) sel.checked = true;
     }
     btnPrev.disabled = (idx===0);
@@ -784,16 +782,21 @@
     });
   }
 
-  async function getAttemptCount(name, section){
-    if (!submissionsCollectionRef || !getDocs || !query || !where) return 0;
+  function buildStudentId(name, section) {
+    const raw = `${name.trim()}|||${section.trim()}|||${COURSE_TITLE}`;
     try {
-      const qy = query(
-        submissionsCollectionRef,
-        where("Name", "==", name),
-        where("section", "==", section),
-        where("Course", "==", COURSE_TITLE)
-      );
-      const snap = await getDocs(qy);
+      const base = btoa(unescape(encodeURIComponent(raw)));
+      return base.replace(/[^A-Za-z0-9]/g, '').slice(0, 80) || 'student';
+    } catch (e) {
+      return raw.replace(/[^A-Za-z0-9]/g, '').slice(0, 80) || 'student';
+    }
+  }
+
+  async function getAttemptCount(studentId){
+    if (!db || !collection || !getDocs) return 0;
+    try {
+      const attemptsCol = collection(db, "finals-exam", EXAM_DOC_ID, "submissions", studentId, "attempts");
+      const snap = await getDocs(attemptsCol);
       return snap.size;
     } catch (e) {
       console.warn("Attempt count check failed:", e);
@@ -862,12 +865,17 @@
       Name: studentName,
       secondsRemaining: secondsLeft,
       section: yearSection,
-      answers: answerSheet
+      answers: answerSheet,
+      autoSubmitted: !!autoSubmitted
     };
 
     try {
-      if (submissionsCollectionRef && addDoc){
-        await addDoc(submissionsCollectionRef, payload);
+      if (db && collection && setDoc && currentStudentId) {
+        const attemptsCol = collection(db, "finals-exam", EXAM_DOC_ID, "submissions", currentStudentId, "attempts");
+        const existingSnap = await getDocs(attemptsCol);
+        const attemptNumber = existingSnap.size + 1;
+        const attemptDoc = doc(db, "finals-exam", EXAM_DOC_ID, "submissions", currentStudentId, "attempts", "attempt" + attemptNumber);
+        await setDoc(attemptDoc, payload);
       } else {
         console.warn("Firestore not initialized; data not saved.");
       }
@@ -888,6 +896,9 @@
     submitting = false;
   }
 
+  // ===========================
+  // EVENT HANDLERS
+  // ===========================
   btnUnderstand.addEventListener('click', ()=>{
     if (isClosed()){
       showInstructionError("This exam is already closed. The deadline was 11:59:59 PM on 21 November 2025.");
@@ -919,7 +930,8 @@
     }
     hideNameError();
 
-    const attempts = await getAttemptCount(nm, ys);
+    currentStudentId = buildStudentId(nm, ys);
+    const attempts = await getAttemptCount(currentStudentId);
     if (attempts >= 2){
       showNameError("You have already used your 2 allowed attempts for this exam. Further attempts are blocked.");
       return;
@@ -932,7 +944,6 @@
     answers = Array(TOTAL_QUESTIONS).fill(null);
 
     goToStage(stageQuiz);
-    started = true;
     renderQuestion();
     startTimer();
   });
