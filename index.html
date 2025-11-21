@@ -92,22 +92,31 @@
       margin-top:12px;
     }
     .choice {
-      display:flex;
-      align-items:flex-start;
-      background:#0b1220;
-      border:1px solid #1f2937;
-      border-radius:10px;
-      padding:10px;
-      width:100%;
-    }
-    .choice input {
-      margin-right:8px;
-      margin-top:3px;
-    }
+  display: flex;
+  align-items: flex-start;
+  background: #0b1220;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 10px;
+  width: 100%;
+  gap: 10px;                 /* add spacing between radio + text */
+}
+
+.choice input {
+  margin-top: 4px;
+}
+
+.choice div {
+  white-space: normal !important;    /* allow text to wrap */
+  word-break: break-word;            /* prevent overflow */
+  flex: 1;                            /* ensures full width for text */
+}
+
     .choice b {
-      margin-right:6px;
-      white-space:nowrap;
-    }
+  display: inline-block;
+  width: 22px;          /* fixed width for letters A/B/C/D */
+}
+
     .footer {
       display:flex;
       justify-content:space-between;
