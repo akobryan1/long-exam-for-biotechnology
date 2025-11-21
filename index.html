@@ -91,26 +91,39 @@
       gap:12px;
       margin-top:12px;
     }
-    .choice {
+/* FIX CHOICES OVERFLOWING HORIZONTALLY */
+#choices {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.choice {
+  display: flex;
+  flex-direction: row;
   align-items: flex-start;
+  width: 100%;
+  max-width: 100% !important;
   background: #0b1220;
   border: 1px solid #1f2937;
   border-radius: 10px;
-  padding: 10px;
-  width: 100%;
-  gap: 10px;                 /* add spacing between radio + text */
+  padding: 12px;
+  box-sizing: border-box;
 }
 
 .choice input {
   margin-top: 4px;
+  flex-shrink: 0;
 }
 
 .choice div {
-  white-space: normal !important;    /* allow text to wrap */
-  word-break: break-word;            /* prevent overflow */
-  flex: 1;                            /* ensures full width for text */
+  flex: 1;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
 }
+
 
     .choice b {
   display: inline-block;
@@ -1045,3 +1058,4 @@ pillCount.textContent = "Q: — / " + QUESTIONS.length;
 </script>
 </body>
 </html>
+
