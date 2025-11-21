@@ -1,30 +1,142 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Agricultural Biotechnology Final Exam</title>
-<style>
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;background:#0f172a;color:#e5e7eb;}
-  .wrap{max-width:960px;margin:0 auto;padding:24px;}
-  .card{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.35);}
-  h1,h2{margin:0 0 10px 0;color:#e2e8f0;}
-  ul{padding-left:18px;}
-  .pill{padding:6px 10px;border-radius:999px;background:#111827;border:1px solid #1f2937;font-size:12px;margin-right:6px;}
-  .meta-row{margin-bottom:10px;}
-  .field{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;}
-  input{padding:10px 12px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e5e7eb;flex:1;min-width:220px;}
-  button{padding:10px 16px;border-radius:12px;border:1px solid #263042;background:#0b1326;color:#e5e7eb;cursor:pointer;}
-  button.primary{background:#0d5a30;}
-  button:disabled{opacity:.6;cursor:not-allowed;}
-  .choice{background:#0b1220;border:1px solid #1f2937;border-radius:10px;padding:10px;margin-bottom:10px;}
-  .choice input{margin-right:8px;}
-  .footer{display:flex;justify-content:space-between;gap:10px;margin-top:20px;}
-  .progress{height:8px;background:#1f2937;border-radius:999px;margin-bottom:12px;}
-  .bar{height:8px;background:#22c55e;width:0%;}
-  .hidden{display:none;}
-  .error{color:#fecaca;font-size:13px;margin-top:6px;}
-</style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Agricultural Biotechnology Final Exam</title>
+  <style>
+    body {
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;
+      background:#0f172a;
+      color:#e5e7eb;
+    }
+    .wrap {
+      max-width:960px;
+      margin:0 auto;
+      padding:24px;
+    }
+    .card {
+      background:#111827;
+      border:1px solid #1f2937;
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    h1,h2 {
+      margin:0 0 10px 0;
+      color:#e2e8f0;
+    }
+    ul {
+      padding-left:20px;
+    }
+    .pill {
+      padding:6px 10px;
+      border-radius:999px;
+      background:#111827;
+      border:1px solid #1f2937;
+      font-size:12px;
+      margin-right:6px;
+      display:inline-block;
+    }
+    .meta-row {
+      margin-bottom:10px;
+    }
+    .field {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin:10px 0;
+    }
+    input[type="text"] {
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #334155;
+      background:#0b1220;
+      color:#e5e7eb;
+      flex:1;
+      min-width:220px;
+    }
+    button {
+      padding:10px 16px;
+      border-radius:12px;
+      border:1px solid #263042;
+      background:#0b1326;
+      color:#e5e7eb;
+      cursor:pointer;
+    }
+    button.primary {
+      background:#0d5a30;
+    }
+    button:disabled {
+      opacity:.6;
+      cursor:not-allowed;
+    }
+    .progress {
+      height:8px;
+      background:#1f2937;
+      border-radius:999px;
+      margin-bottom:12px;
+      overflow:hidden;
+    }
+    .bar {
+      height:100%;
+      width:0%;
+      background:#22c55e;
+      transition:width .2s ease-out;
+    }
+    #choices {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:12px;
+    }
+    .choice {
+      display:flex;
+      align-items:flex-start;
+      background:#0b1220;
+      border:1px solid #1f2937;
+      border-radius:10px;
+      padding:10px;
+      width:100%;
+    }
+    .choice input {
+      margin-right:8px;
+      margin-top:3px;
+    }
+    .choice b {
+      margin-right:6px;
+      white-space:nowrap;
+    }
+    .footer {
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:20px;
+      flex-wrap:wrap;
+    }
+    .hidden {
+      display:none;
+    }
+    .error {
+      color:#fecaca;
+      font-size:13px;
+      margin-top:6px;
+    }
+    .small {
+      font-size:12px;
+      color:#9ca3af;
+    }
+    @media (max-width:600px) {
+      .footer {
+        flex-direction:column;
+        align-items:stretch;
+      }
+      button {
+        width:100%;
+      }
+    }
+  </style>
 </head>
 <body>
 <div class="wrap">
@@ -39,36 +151,38 @@
     </div>
 
     <!-- Stage 0: Instructions -->
-    <div id="stage0">
+    <section id="stage0">
       <h2>Exam Instructions</h2>
       <ul>
-        <li>This exam is <b>screen recorded</b>.</li>
-        <li>You have <b>1 hour</b> to finish.</li>
-        <li>You may take the exam <b>twice</b>. After the second attempt, attempts are blocked.</li>
-        <li>The link closes at <b>11:59:59 PM on 21 November 2025</b>.</li>
+        <li>This exam is <strong>screen recorded</strong>.</li>
+        <li>You have <strong>1 hour</strong> to finish once you start.</li>
+        <li>You may take the exam <strong>twice</strong>. After the second attempt, all further attempts are blocked.</li>
+        <li>The link closes at <strong>11:59:59 PM on 21 November 2025</strong>. After this, you will not be able to access the exam.</li>
       </ul>
-      <p>Please make sure you have a stable internet connection before starting.</p>
+      <p class="small">Make sure you have a stable internet connection. Do not close the tab while taking the exam.</p>
       <div class="error" id="errStage0" style="display:none;"></div>
       <button class="primary" id="btnUnderstand">I understand</button>
-    </div>
+    </section>
 
     <!-- Stage 1: Student Info -->
-    <div id="stage1" class="hidden">
+    <section id="stage1" class="hidden">
       <h2>Student Information</h2>
       <div class="field">
-        <input id="inpName" placeholder="Full Name"/>
-        <input id="inpSection" placeholder="Year & Section (e.g., BS Agri 2A)"/>
+        <input type="text" id="inpName" placeholder="Full Name"/>
+        <input type="text" id="inpSection" placeholder="Year & Section (e.g., BS Agri 3A)"/>
       </div>
       <div class="error" id="errStage1" style="display:none;"></div>
       <div class="footer">
         <button id="btnBack">Back</button>
         <button class="primary" id="btnStart">Next</button>
       </div>
-    </div>
+    </section>
 
     <!-- Stage 2: Exam -->
-    <div id="stage2" class="hidden">
-      <div class="progress"><div id="bar" class="bar"></div></div>
+    <section id="stage2" class="hidden">
+      <div class="progress">
+        <div id="bar" class="bar"></div>
+      </div>
       <p id="qtext"></p>
       <div id="choices"></div>
       <div class="error" id="errStage2" style="display:none;"></div>
@@ -79,32 +193,481 @@
           <button id="btnSubmit" class="primary hidden">Submit</button>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Stage 3: Result -->
-    <div id="stage3" class="hidden">
-      <h2>Submission Complete ✅</h2>
-      <p><b id="rName"></b> (<span id="rSection"></span>)</p>
-      <p>Your Score: <b id="rScore"></b></p>
+    <section id="stage3" class="hidden">
+      <h2>Submission Complete</h2>
+      <p><strong id="rName"></strong> (<span id="rSection"></span>)</p>
+      <p>Your Score: <strong id="rScore"></strong></p>
+      <p class="small">Your complete answer sheet (chosen answers and correct answers) has been saved to the database.</p>
       <p class="error" id="rNote" style="display:none;"></p>
-      <p class="small">Your full answer sheet (chosen answers and correct answers) has been saved to the database.</p>
-    </div>
+    </section>
 
   </div>
 </div>
 
 <script type="module">
-// ===== Questions embedded from agribiotech.odt =====
-const QUESTIONS = [{"num": 1, "q": "Biocon agents such as compost activators are primarily used to:", "A": "Kill all microorganisms in compost", "B": "Speed up the decomposition of organic materials", "C": "Sterilize soil", "D": "Remove all moisture from compost", "ans": "B"}, {"num": 2, "q": "Which microorganism group is MOST commonly involved in compost activation and organic waste fermentation?", "A": "Viruses", "B": "Lactic acid bacteria and fungi", "C": "Helminths", "D": "Nematodes", "ans": "B"}, {"num": 3, "q": "Why are fermentation agents added to organic fertilizers?", "A": "To make the fertilizer smell good only", "B": "To promote controlled microbial activity that stabilizes nutrients", "C": "To increase the weight artificially", "D": "To remove all nutrients from the compost", "ans": "B"}, {"num": 4, "q": "A farmer wants faster composting of rice straw and animal manure. Which practice best applies the use of biocon agents?", "A": "Leaving the pile dry and uncovered", "B": "Spraying a commercial compost activator and maintaining moisture", "C": "Burning the residues on the field", "D": "Adding only synthetic fertilizer", "ans": "B"}, {"num": 5, "q": "Lab results show that compost treated with a fermentation agent has higher microbial activity and faster breakdown than untreated compost. What is the MOST logical analysis?", "A": "The activator had no effect", "B": "The activator enhanced microbial activity, improving decomposition", "C": "The activator killed all microbes", "D": "Fermentation agents always reduce compost quality", "ans": "B"}, {"num": 6, "q": "Biopharming refers to the use of:", "A": "Traditional plowing methods", "B": "Animals to weed the field", "C": "Crops or animals engineered to produce pharmaceutical products", "D": "Organic fertilizers in farms", "ans": "C"}, {"num": 7, "q": "Which is an example of biopharming?", "A": "Using cows to graze grass", "B": "Producing vaccines in transgenic plants", "C": "Applying manure to crops", "D": "Spraying herbicides", "ans": "B"}, {"num": 8, "q": "A company uses genetically modified maize to produce a human therapeutic protein. How does this apply biopharming?", "A": "Maize is only used as food", "B": "Maize acts as a factory for pharmaceutical protein production", "C": "Maize is used only as animal feed", "D": "Maize is burned after harvest", "ans": "B"}, {"num": 9, "q": "A concern is raised that biopharming crops might unintentionally mix with food crops. What is this mainly an example of?", "A": "Improved biodiversity", "B": "Possible gene flow and contamination risk", "C": "Better food quality", "D": "Guaranteed safety", "ans": "B"}, {"num": 10, "q": "A policy maker must decide whether to allow open-field trials of biopharming crops near food production areas. From a regulatory standpoint, how should this be evaluated?", "A": "Approve immediately without risk assessment", "B": "Reject all trials without discussion", "C": "Carefully weigh potential health, environmental, and economic risks versus benefits and require strict biosafety measures", "D": "Allow trials with no monitoring", "ans": "C"}, {"num": 11, "q": "Phytoremediation is best defined as the:", "A": "Use of chemicals to remove soil pollutants", "B": "Use of plants to absorb, stabilize, or detoxify contaminants", "C": "Burning contaminated soils", "D": "Deep plowing to bury pollutants", "ans": "B"}, {"num": 12, "q": "Which situation is most suitable for phytoremediation?", "A": "Lightly metal-contaminated soil with adequate plant growth", "B": "Extremely radioactive waste only", "C": "Clean, uncontaminated soil", "D": "Deep ocean pollution", "ans": "A"}, {"num": 13, "q": "A community uses sunflower to extract heavy metals from contaminated soil. This is an example of:", "A": "Chemical remediation", "B": "Phytoremediation using hyperaccumulator plants", "C": "Soil sterilization", "D": "Salinization", "ans": "B"}, {"num": 14, "q": "Soil tests show reduced metal concentration in the upper layer where certain plants were grown. What is the MOST likely analysis?", "A": "Metals disappeared naturally", "B": "Plants absorbed metals, supporting phytoremediation", "C": "Sampling error only", "D": "Metals became more toxic", "ans": "B"}, {"num": 15, "q": "When evaluating phytoremediation vs. soil excavation and disposal, which statement is most appropriate from a sustainability standpoint?", "A": "Excavation is always better", "B": "Phytoremediation can be more sustainable where time is available, as it is less disruptive and often cheaper", "C": "Phytoremediation is never effective", "D": "Only excavation protects the environment", "ans": "B"}, {"num": 16, "q": "\u201cFake seeds\u201d in agriculture usually refer to:", "A": "Seeds that are larger than normal", "B": "Seeds with falsified labels or poor genetic and physical quality sold as branded seeds", "C": "Any seed from farmers\u2019 fields", "D": "Seeds with high germination", "ans": "B"}, {"num": 17, "q": "Which sign may help a farmer understand that seeds might be fake or spurious?", "A": "Properly sealed, labeled packaging from a registered source", "B": "Very low germination and off-type plants compared with label claims", "C": "Seed tested by accredited labs", "D": "Documentation of certification", "ans": "B"}, {"num": 18, "q": "A farmer buys \u201chybrid rice seeds\u201d from an unknown vendor at a very low price and gets poor, non-uniform yield. How does this situation apply the problem of fake seeds?", "A": "Farmer used high quality certified seeds", "B": "The seed may have been fake or mislabelled, leading to poor performance", "C": "Hybrid seeds always fail", "D": "Low price always means better quality", "ans": "B"}, {"num": 19, "q": "Regional data show high incidence of crop failure linked to unregistered seed vendors. What is the most reasonable analysis?", "A": "Registered vendors cause the problem", "B": "Weak regulation and enforcement allow fake seed trade, harming yields", "C": "Seed quality has no effect on yield", "D": "Farmers do not need seed laws", "ans": "B"}, {"num": 20, "q": "A government considers stricter penalties and better monitoring for fake seed sellers. From a policy perspective, how should this be evaluated?", "A": "Unnecessary, because seed quality does not matter", "B": "Positive, as it protects farmers, yield, and integrity of seed systems", "C": "Harmful to all stakeholders", "D": "Only important for exporters", "ans": "B"}, {"num": 21, "q": "Vaccines in livestock are used primarily to:", "A": "Treat worms", "B": "Prevent specific infectious diseases by stimulating immunity", "C": "Increase body weight instantly", "D": "Reduce water consumption", "ans": "B"}, {"num": 22, "q": "Artificial insemination (AI) in cattle is best described as:", "A": "Natural mating by bulls", "B": "Manual insertion of semen into the female reproductive tract using collected semen", "C": "Use of hormones to induce heat", "D": "Surgical removal of ovaries", "ans": "B"}, {"num": 23, "q": "Multiple Ovulation and Embryo Transfer (MOET) is a technology that applies biotechnology by:", "A": "Destroying embryos in elite cows", "B": "Producing many embryos from a superior female and transferring them to recipients", "C": "Preventing reproduction", "D": "Reducing genetic gain", "ans": "B"}, {"num": 24, "q": "Probiotics are generally defined as:", "A": "Synthetic antibiotics", "B": "Live microorganisms that when administered in adequate amounts confer a health benefit", "C": "Chemical preservatives", "D": "Soil fumigants", "ans": "B"}, {"num": 25, "q": "A poultry farmer adds probiotics to feed and later observes improved gut health and reduced diarrhea. What is the MOST logical analysis?", "A": "Probiotics had no role", "B": "Probiotics likely supported beneficial gut microbes, improving health", "C": "Probiotics caused the disease", "D": "Gut health is unrelated to probiotics", "ans": "B"}, {"num": 26, "q": "A committee must decide whether to prioritize AI/MOET programs in national breeding plans. From a breeding and resource viewpoint, how should this be evaluated?", "A": "Not useful because natural mating is always superior", "B": "Potentially advantageous because AI/MOET can rapidly spread superior genetics if managed ethically and sustainably", "C": "Always harmful to breeds", "D": "Unrelated to genetic improvement", "ans": "B"}, {"num": 27, "q": "One promise of future biotechnology in agriculture is to:", "A": "Produce crops with lower resilience", "B": "Develop stress-tolerant, nutrient-efficient varieties", "C": "Eliminate all biodiversity", "D": "Replace all traditional knowledge", "ans": "B"}, {"num": 28, "q": "\u201cBiotech products nearing commercialization\u201d often include crops that:", "A": "Have no useful traits", "B": "May carry traits such as drought tolerance, biofortification, or disease resistance", "C": "Only change plant color", "D": "Remove all natural defenses", "ans": "B"}, {"num": 29, "q": "A breeding program uses biotechnology to create rice with enhanced vitamin A content (e.g., biofortified rice). How does this apply biotechnology to public health?", "A": "It ignores nutrition issues", "B": "It aims to reduce micronutrient deficiency in populations dependent on rice", "C": "It reduces yield only", "D": "It targets only cosmetic traits", "ans": "B"}, {"num": 30, "q": "Data show that a biotech crop reduces pesticide use but may increase dependence on a few seed suppliers. What is the best analysis of its role in a sustainable future?", "A": "Benefits and risks are both present\u2014less chemical use vs. potential seed access issues", "B": "All biotech crops are always harmful", "C": "Only seed dependence matters", "D": "Only pesticide reduction matters", "ans": "A"}, {"num": 31, "q": "When evaluating future biotech options for sustainable agriculture, which reasoning is most appropriate?", "A": "Accept all biotech instantly", "B": "Reject all biotech absolutely", "C": "Carefully assess each product\u2019s ecological, social, and economic impacts relative to alternatives", "D": "Decide only on the basis of short-term profit", "ans": "C"}, {"num": 32, "q": "The main purpose of biosafety regulations in biotechnology is to:", "A": "Stop all research", "B": "Ensure safe development, handling, and use of biotech products", "C": "Promote uncontrolled release of GMOs", "D": "Replace traditional agriculture", "ans": "B"}, {"num": 33, "q": "Which international agreement is specifically concerned with the transboundary movement of living modified organisms (LMOs)?", "A": "Paris Agreement", "B": "Cartagena Protocol on Biosafety", "C": "Kyoto Protocol", "D": "Basel Convention on Hazardous Wastes", "ans": "B"}, {"num": 34, "q": "Local biosafety regulations generally aim to help people understand that:", "A": "Biotech products require no risk assessment", "B": "There is a structured system for risk assessment, approval, and monitoring", "C": "Only foreign experts can decide", "D": "Farmers have no role", "ans": "B"}, {"num": 35, "q": "A regulatory body requires environmental risk assessment before releasing a new GM crop. How does this apply the principles behind biosafety laws?", "A": "It ignores ecological concerns", "B": "It operationalizes precaution and risk-based decision making", "C": "It accelerates release without data", "D": "It bans all GM crops automatically", "ans": "B"}, {"num": 36, "q": "Monitoring reports show that a regulatory institution lacks capacity and coordination, leading to slow and inconsistent decisions. What is the best analysis?", "A": "Regulation is unnecessary", "B": "Weak institutions undermine effective biosafety governance and trust", "C": "Slow decisions mean better safety", "D": "Institutions are irrelevant", "ans": "B"}, {"num": 37, "q": "A national biotech law emphasizes transparency, public participation, and risk-benefit analysis. From a governance viewpoint, how should this be evaluated?", "A": "Negative, because public involvement complicates decisions", "B": "Positive, because it promotes accountability, inclusiveness, and informed decision making", "C": "Neutral, since laws never affect trust", "D": "Unimportant to biosafety", "ans": "B"}, {"num": 38, "q": "\u201cAlternatives in biotechnology\u201d can refer to:", "A": "Only chemical-intensive practices", "B": "Using non-GM breeding, integrated pest management, or ecological approaches alongside or instead of GM tools", "C": "Stopping all crop improvement", "D": "Burning crop fields", "ans": "B"}, {"num": 39, "q": "A farmer chooses marker-assisted selection and organic pest management instead of GM crops. This is an example of:", "A": "Rejecting all technology", "B": "Using alternative biotechnological and ecological approaches", "C": "Avoiding crop improvement altogether", "D": "Illegal practice", "ans": "B"}, {"num": 40, "q": "Comparing GM-based pest resistance with integrated pest management (IPM), which statement shows a balanced analysis?", "A": "GM is always better than IPM", "B": "IPM is always better than GM", "C": "Both approaches have roles; their suitability depends on local ecology, economics, and risk considerations", "D": "Neither approach is useful", "ans": "C"}, {"num": 41, "q": "A policy prioritizes only high-tech biotech while ignoring local, low-cost alternatives. From a sustainability and equity perspective, how should this be evaluated?", "A": "Ideal for all farmers", "B": "Potentially inequitable and less sustainable for resource-poor farmers", "C": "Neutral", "D": "Always the best choice", "ans": "B"}, {"num": 42, "q": "Which statement best describes the role of institutions (universities, research centers, regulators) in biotechnology?", "A": "They only sell products", "B": "They generate knowledge, assess risks, train people, and help guide safe application", "C": "They stop all innovation", "D": "They only serve private companies", "ans": "B"}, {"num": 43, "q": "A research institute develops a probiotic-based compost activator to help small farmers. How does this apply biotechnology for sustainability?", "A": "It increases chemical pesticide use", "B": "It offers a biological tool to enhance soil health and waste recycling", "C": "It reduces soil organic matter", "D": "It encourages burning residues", "ans": "B"}, {"num": 44, "q": "Data show that farms using probiotics, phytoremediation, and compost activators have improved soil quality and reduced chemical inputs. What can be reasonably concluded?", "A": "These biotechnologies are harmful", "B": "These biotechnologies can contribute to more sustainable soil management", "C": "Soil quality is unrelated to management", "D": "Chemicals are always superior", "ans": "B"}, {"num": 45, "q": "When selecting between a pharma-producing GM crop (biopharming) and conventional pharmaceutical production in factories, what is a key factor to evaluate?", "A": "Only the color of the plant", "B": "Environmental, biosafety, containment, and economic considerations of each route", "C": "The company logo", "D": "Popularity on social media", "ans": "B"}, {"num": 46, "q": "In AI/MOET programs, which aspect is MOST important to remember in planning? Level of thinking: Remembering", "A": "Only coat color of animals", "B": "Selection of genetically superior and healthy donors and sires", "C": "Random selection of animals", "D": "Ignoring disease control", "ans": "B"}, {"num": 47, "q": "A biopharming crop is proposed to be grown in a region with weak regulatory capacity and high risk of mixing with food crops. What is the MOST appropriate analysis?", "A": "No concern because biotech is always safe", "B": "The context increases biosafety and contamination risks and demands strong precaution", "C": "It guarantees better food quality", "D": "It has only economic benefits", "ans": "B"}, {"num": 48, "q": "A multi-stakeholder platform (farmers, NGOs, scientists, regulators) is created to discuss GM crop adoption. From a governance viewpoint, how should this be evaluated?", "A": "Unnecessary delay", "B": "Valuable for incorporating diverse perspectives and building social legitimacy", "C": "Always anti-technology", "D": "Irrelevant to decision-making", "ans": "B"}, {"num": 49, "q": "Which of the following is a correct understanding of how vaccines differ from probiotics in livestock production?", "A": "Vaccines directly kill pathogens; probiotics are only vitamins", "B": "Vaccines stimulate specific immune responses; probiotics support gut health and microbial balance", "C": "Both are exactly the same", "D": "Probiotics always replace vaccination", "ans": "B"}, {"num": 50, "q": "A country invests in regulations, training, and infrastructure for biosafety while also supporting alternative and low-cost biotechnologies. From a long-term sustainability perspective, how should this strategy be evaluated?", "A": "Wasteful, since only one technology is needed", "B": "Positive, because it balances innovation, safety, and inclusiveness for different types of farmers", "C": "Harmful, as it limits choices", "D": "Neutral, with no real impact \u2705", "ans": "B"}];
+const QUESTIONS = [
+  {
+    "num": 1,
+    "q": "Biocon agents such as compost activators are primarily used to:",
+    "A": "Kill all microorganisms in compost",
+    "B": "Speed up the decomposition of organic materials",
+    "C": "Sterilize soil",
+    "D": "Remove all moisture from compost",
+    "ans": "B"
+  },
+  {
+    "num": 2,
+    "q": "Which microorganism group is MOST commonly involved in compost activation and organic waste fermentation?",
+    "A": "Viruses",
+    "B": "Lactic acid bacteria and fungi",
+    "C": "Helminths",
+    "D": "Nematodes",
+    "ans": "B"
+  },
+  {
+    "num": 3,
+    "q": "Why are fermentation agents added to organic fertilizers?",
+    "A": "To make the fertilizer smell good only",
+    "B": "To promote controlled microbial activity that stabilizes nutrients",
+    "C": "To increase the weight artificially",
+    "D": "To remove all nutrients from the compost",
+    "ans": "B"
+  },
+  {
+    "num": 4,
+    "q": "A farmer wants faster composting of rice straw and animal manure. Which practice best applies the use of biocon agents?",
+    "A": "Adding compost activators and maintaining proper moisture and aeration",
+    "B": "Burning the straw before composting",
+    "C": "Storing the manure in sealed plastic bags",
+    "D": "Flooding the compost pit with water",
+    "ans": "A"
+  },
+  {
+    "num": 5,
+    "q": "Which of the following is an advantage of using biocon or compost activators in smallholder farms?",
+    "A": "They permanently sterilize the soil",
+    "B": "They shorten composting time and improve nutrient availability",
+    "C": "They eliminate the need for any organic waste",
+    "D": "They allow farmers to ignore composting conditions",
+    "ans": "B"
+  },
+  {
+    "num": 6,
+    "q": "Biocon-based fermentation of crop residues and animal manure helps farmers by:",
+    "A": "Reducing the organic matter content of the soil",
+    "B": "Producing stable, nutrient-rich organic fertilizer with fewer odors",
+    "C": "Increasing greenhouse gas emissions",
+    "D": "Making soil more compact and less porous",
+    "ans": "C"
+  },
+  {
+    "num": 7,
+    "q": "A cooperative is evaluating several products labeled as compost “biocon agents.” What is the MOST important factor they should verify?",
+    "A": "Color and smell only",
+    "B": "Presence of beneficial microorganisms and clear instructions for use",
+    "C": "Brand popularity only",
+    "D": "Imported origin",
+    "ans": "B"
+  },
+  {
+    "num": 8,
+    "q": "When using fermentation agents for silage or organic fertilizer, which farmer practice best maintains their effectiveness?",
+    "A": "Exposing the agents to direct sunlight for long periods",
+    "B": "Storing them according to label instructions and mixing at recommended rates",
+    "C": "Mixing them with any chemical pesticide",
+    "D": "Applying them only once regardless of conditions",
+    "ans": "B"
+  },
+  {
+    "num": 9,
+    "q": "From a One Health perspective, why is proper composting and fermentation of organic wastes important?",
+    "A": "It focuses only on crop yield",
+    "B": "It reduces pathogens and odors, improving environmental and community health",
+    "C": "It increases uncontrolled pest populations",
+    "D": "It eliminates the need for hygiene in handling wastes",
+    "ans": "B"
+  },
+  {
+    "num": 10,
+    "q": "An agricultural extension worker promotes the use of biocon agents instead of open-field burning of residues. Which benefit BEST supports this recommendation?",
+    "A": "Open burning always increases soil fertility",
+    "B": "Biocon-assisted composting reduces air pollution and recycles nutrients back to the field",
+    "C": "Biocon agents permanently eliminate all weeds",
+    "D": "Biocon use reduces the need for any farm labor",
+    "ans": "C"
+  },
+  {
+    "num": 11,
+    "q": "Biopharming refers to:",
+    "A": "Traditional crop rotation for soil fertility",
+    "B": "Using farm animals to process household waste",
+    "C": "Producing pharmaceutical or industrial compounds using genetically modified plants or animals",
+    "D": "Manual seed selection by farmers",
+    "ans": "B"
+  },
+  {
+    "num": 12,
+    "q": "Which example BEST illustrates biopharming?",
+    "A": "Purely organic rice farming",
+    "B": "Maize engineered to produce edible vaccines against a specific disease",
+    "C": "Traditional herbal medicine use",
+    "D": "Using compost as fertilizer",
+    "ans": "A"
+  },
+  {
+    "num": 13,
+    "q": "One major concern about biopharming in open-field conditions is:",
+    "A": "Lack of any effect on surrounding crops",
+    "B": "Potential gene flow or mixing with food/feed crops, causing unintended exposure",
+    "C": "Increased soil erosion",
+    "D": "Immediate extinction of wild species",
+    "ans": "B"
+  },
+  {
+    "num": 14,
+    "q": "Which BEST describes a key regulatory requirement for biopharming projects?",
+    "A": "No regulation is required",
+    "B": "Strict biosafety evaluation, containment measures, and monitoring to prevent unintended exposure",
+    "C": "Only voluntary guidelines without any formal approval",
+    "D": "Approval only from international agencies, not from local authorities",
+    "ans": "B"
+  },
+  {
+    "num": 15,
+    "q": "From a farmer and consumer perspective, what is an important ethical question regarding biopharming?",
+    "A": "Whether compost is allowed in the farm",
+    "B": "How to ensure that pharmaceuticals produced in crops do not accidentally enter the regular food chain",
+    "C": "Whether to irrigate crops or not",
+    "D": "How to stop all innovation in agriculture",
+    "ans": "B"
+  },
+  {
+    "num": 16,
+    "q": "\"Fake seeds\" in agriculture usually refer to:",
+    "A": "Seeds that are larger than normal",
+    "B": "Seeds with falsified labels or poor genetic and physical quality sold as branded seeds",
+    "C": "Any seed from farmers’ fields",
+    "D": "Seeds with high germination",
+    "ans": "B"
+  },
+  {
+    "num": 17,
+    "q": "Which is a common consequence of fake or substandard seeds on farmers?",
+    "A": "Higher and more reliable yields",
+    "B": "Crop failure, reduced yield, and financial loss",
+    "C": "Guaranteed disease resistance",
+    "D": "Improved market prices",
+    "ans": "B"
+  },
+  {
+    "num": 18,
+    "q": "Which measure can help protect farmers from fake seeds?",
+    "A": "Buying unlabeled seeds from unknown vendors",
+    "B": "Purchasing seeds only from certified dealers and checking official labels",
+    "C": "Avoiding any record-keeping",
+    "D": "Ignoring expiration dates and quality seals",
+    "ans": "B"
+  },
+  {
+    "num": 19,
+    "q": "At the policy level, how can governments reduce the occurrence of fake seeds in the market?",
+    "A": "By not regulating seed quality at all",
+    "B": "By strengthening seed certification, market surveillance, and penalties for fraud",
+    "C": "By banning all private seed companies",
+    "D": "By removing all inspection systems",
+    "ans": "B"
+  },
+  {
+    "num": 20,
+    "q": "From a One Health and food security perspective, the widespread circulation of fake seeds is a concern because:",
+    "A": "It always increases biodiversity",
+    "B": "It threatens harvest reliability, farmer income, and community food supply",
+    "C": "It only affects ornamental plants",
+    "D": "It only affects urban consumers",
+    "ans": "B"
+  },
+  {
+    "num": 21,
+    "q": "Vaccines used in livestock production primarily aim to:",
+    "A": "Decrease all animal growth",
+    "B": "Prevent or reduce the severity of infectious diseases, improving animal health and productivity",
+    "C": "Eliminate the need for any hygiene",
+    "D": "Replace all types of feed",
+    "ans": "B"
+  },
+  {
+    "num": 22,
+    "q": "Which is an example of a benefit of vaccination from a public health perspective?",
+    "A": "Increasing the risk of zoonotic diseases",
+    "B": "Reducing transmission of zoonotic diseases from animals to humans",
+    "C": "Guaranteeing overuse of antibiotics",
+    "D": "Eliminating the need for surveillance",
+    "ans": "B"
+  },
+  {
+    "num": 23,
+    "q": "Cold chain management in vaccine distribution is important because:",
+    "A": "Vaccines are always heat stable",
+    "B": "Improper temperature can reduce vaccine effectiveness or make them unsafe",
+    "C": "It only affects the label color",
+    "D": "It is done only for marketing purposes",
+    "ans": "B"
+  },
+  {
+    "num": 24,
+    "q": "In agricultural communities, misleading claims about vaccines (e.g., that they cause the disease they prevent) can lead to:",
+    "A": "Improved vaccination rates",
+    "B": "Vaccine hesitancy and disease outbreaks",
+    "C": "Stronger trust in science",
+    "D": "Uniform adoption of best practices",
+    "ans": "B"
+  },
+  {
+    "num": 25,
+    "q": "From a sustainable livestock production perspective, integrating proper vaccination with good nutrition and housing can:",
+    "A": "Reduce overall productivity",
+    "B": "Improve animal welfare, decrease mortality, and stabilize farmer income",
+    "C": "Make disease surveillance unnecessary",
+    "D": "Eliminate the need for trained veterinarians",
+    "ans": "B"
+  },
+  {
+    "num": 26,
+    "q": "Artificial insemination (AI) in animals is best described as:",
+    "A": "Natural mating in a pasture",
+    "B": "Manual collection of semen and its controlled deposition into the female reproductive tract",
+    "C": "Cloning of animals in the lab",
+    "D": "Surgical removal of ovaries",
+    "ans": "B"
+  },
+  {
+    "num": 27,
+    "q": "Multiple Ovulation and Embryo Transfer (MOET) allows breeders to:",
+    "A": "Reduce the genetic diversity of herds only",
+    "B": "Obtain more offspring from genetically superior females in a shorter time",
+    "C": "Stop all natural reproduction",
+    "D": "Avoid any record-keeping",
+    "ans": "B"
+  },
+  {
+    "num": 28,
+    "q": "Which is a primary advantage of AI and MOET in improving animal genetics?",
+    "A": "Random mating without selection",
+    "B": "Faster dissemination of desirable traits such as high milk yield or growth rate",
+    "C": "Elimination of all genetic variation",
+    "D": "Guaranteed absence of diseases in offspring",
+    "ans": "B"
+  },
+  {
+    "num": 29,
+    "q": "A key ethical and practical concern with AI/MOET in smallholder settings is:",
+    "A": "Too little genetic improvement",
+    "B": "Possible loss of locally adapted breeds if only a few high-performing lines are used",
+    "C": "Lack of any need for training",
+    "D": "Total independence from veterinary services",
+    "ans": "B"
+  },
+  {
+    "num": 30,
+    "q": "From a One Health viewpoint, responsible use of AI and MOET includes:",
+    "A": "Ignoring animal welfare",
+    "B": "Considering animal welfare, genetic diversity, and long-term resilience of production systems",
+    "C": "Focusing only on short-term milk yield",
+    "D": "Completely avoiding any health monitoring",
+    "ans": "B"
+  },
+  {
+    "num": 31,
+    "q": "Probiotics in animal nutrition refer to:",
+    "A": "Any form of antibiotic used in feed",
+    "B": "Live beneficial microorganisms given to improve gut health and overall performance",
+    "C": "Synthetic growth hormones",
+    "D": "Inert feed additives with no biological effect",
+    "ans": "B"
+  },
+  {
+    "num": 32,
+    "q": "Which is a commonly reported benefit of probiotics in livestock?",
+    "A": "Reduced feed efficiency",
+    "B": "Improved digestion, better feed conversion, and sometimes reduced diarrhea",
+    "C": "Increased toxin levels in the gut",
+    "D": "Complete replacement of clean water",
+    "ans": "B"
+  },
+  {
+    "num": 33,
+    "q": "Probiotics and good gut health can contribute to reduced antibiotic use because:",
+    "A": "They cause more infections",
+    "B": "They support the animal’s natural defenses, possibly reducing the frequency of infections",
+    "C": "They directly eliminate the need for hygiene",
+    "D": "They permanently sterilize the intestines",
+    "ans": "B"
+  },
+  {
+    "num": 34,
+    "q": "When farmers use probiotics, it is important that they:",
+    "A": "Store them in any condition",
+    "B": "Follow product instructions, including storage and mixing rates, to maintain viability of microorganisms",
+    "C": "Mix them with any chemical pesticide in feed",
+    "D": "Add them only once in the animal’s life",
+    "ans": "B"
+  },
+  {
+    "num": 35,
+    "q": "From a One Health perspective, promoting probiotics and good management in place of routine antibiotic growth promoters helps by:",
+    "A": "Increasing antimicrobial resistance",
+    "B": "Potentially reducing selection pressure for antimicrobial-resistant bacteria",
+    "C": "Eliminating the need for disease monitoring",
+    "D": "Guaranteeing that no animal will ever get sick",
+    "ans": "B"
+  },
+  {
+    "num": 36,
+    "q": "Which statement BEST reflects the idea of \"biotechnology products nearing commercialization\"?",
+    "A": "All biotech products are still in basic research",
+    "B": "Some products, such as GM crops with improved traits, gene-based vaccines, or biopharmaceuticals, are close to or already entering the market",
+    "C": "No biotech product is allowed anywhere in the world",
+    "D": "Only traditional technologies are relevant for modern agriculture",
+    "ans": "B"
+  },
+  {
+    "num": 37,
+    "q": "A key factor determining whether a new biotech product can be commercialized is:",
+    "A": "Its popularity on social media only",
+    "B": "Compliance with biosafety, efficacy, ethical, and regulatory requirements",
+    "C": "Lack of any regulatory review",
+    "D": "Only its price in the market",
+    "ans": "B"
+  },
+  {
+    "num": 38,
+    "q": "Consider a genetically modified crop that is drought tolerant and pest resistant. From a sustainability perspective, which potential advantage is MOST relevant?",
+    "A": "It always requires more pesticides",
+    "B": "It may reduce input use and crop losses, contributing to more stable yields under stress conditions",
+    "C": "It automatically causes soil erosion",
+    "D": "It eliminates the need for training farmers",
+    "ans": "B"
+  },
+  {
+    "num": 39,
+    "q": "In discussing the future of biotechnology, which aspect is important for ensuring public trust?",
+    "A": "Keeping all information confidential",
+    "B": "Transparent risk assessment, stakeholder engagement, and clear communication of benefits and risks",
+    "C": "Excluding farmers and consumers from discussions",
+    "D": "Ignoring local cultural and ethical concerns",
+    "ans": "B"
+  },
+  {
+    "num": 40,
+    "q": "Biotechnology in a sustainable future is BEST described as:",
+    "A": "A single solution to all agricultural problems",
+    "B": "One of several tools that, when used responsibly with traditional practices, can help address food security, health, and environmental challenges",
+    "C": "A technology that replaces all local knowledge",
+    "D": "A replacement for good governance and policy",
+    "ans": "B"
+  },
+  {
+    "num": 41,
+    "q": "Why are regulations essential in the use of agricultural biotechnology?",
+    "A": "To stop all innovation",
+    "B": "To ensure that biotech products are safe for human, animal, and environmental health before and after release",
+    "C": "To make approval faster regardless of safety",
+    "D": "To benefit only a few companies",
+    "ans": "B"
+  },
+  {
+    "num": 42,
+    "q": "In many countries, which body typically oversees biosafety assessments of genetically modified crops?",
+    "A": "Only private seed companies",
+    "B": "Relevant government biosafety or regulatory agencies and committees",
+    "C": "Supermarkets",
+    "D": "Farmer associations alone",
+    "ans": "B"
+  },
+  {
+    "num": 43,
+    "q": "From a One Health perspective, regulation of biotechnology should consider:",
+    "A": "Human health only",
+    "B": "Human, animal, and environmental health together, including socio-economic impacts",
+    "C": "Economic cost only",
+    "D": "Lab convenience only",
+    "ans": "B"
+  },
+  {
+    "num": 44,
+    "q": "What is one potential risk if biotechnology products are introduced without adequate regulation and monitoring?",
+    "A": "Guaranteed long-term sustainability",
+    "B": "Unintended harm to ecosystems, food safety issues, or loss of public trust",
+    "C": "Improved risk communication",
+    "D": "Perfect knowledge among all stakeholders",
+    "ans": "B"
+  },
+  {
+    "num": 45,
+    "q": "Stakeholder participation in biotechnology regulation is important because:",
+    "A": "It slows down all processes for no reason",
+    "B": "It allows different groups (farmers, consumers, scientists, policymakers) to share concerns and expectations, leading to more acceptable decisions",
+    "C": "It removes the need for scientific evidence",
+    "D": "It focuses only on company profits",
+    "ans": "B"
+  },
+  {
+    "num": 46,
+    "q": "A farmer group is considering adopting a new biotech crop. Which combination of actions BEST supports responsible decision-making?",
+    "A": "Relying only on rumors",
+    "B": "Consulting extension workers, checking official regulatory approvals, and comparing performance with existing varieties",
+    "C": "Ignoring local conditions",
+    "D": "Using the crop without any information",
+    "ans": "B"
+  },
+  {
+    "num": 47,
+    "q": "From a long-term sustainability standpoint, why is it important to integrate biotechnology with other practices such as agroecology and good management?",
+    "A": "Biotechnology alone is always sufficient",
+    "B": "Combining different approaches can maximize benefits while reducing risks and dependency on a single solution",
+    "C": "Other practices always conflict with biotechnology",
+    "D": "It eliminates the need for regulations",
+    "ans": "B"
+  },
+  {
+    "num": 48,
+    "q": "Farmers and communities sometimes worry about losing control over seeds and technologies. What is one way to address this concern in the context of biotechnology?",
+    "A": "Limiting any information to farmers",
+    "B": "Developing policies that protect farmers’ rights, encourage local breeding, and ensure fair access to technology",
+    "C": "Eliminating all local varieties",
+    "D": "Banning farmers from saving seeds",
+    "ans": "B"
+  },
+  {
+    "num": 49,
+    "q": "Considering One Health and sustainability, the MOST appropriate view of agricultural biotechnology is that it:",
+    "A": "Should replace all other technologies",
+    "B": "Should be evaluated case by case, integrated with other practices, and governed by strong biosafety and ethical frameworks",
+    "C": "Can be used without any regulation",
+    "D": "Has no role in modern agriculture",
+    "ans": "B"
+  },
+  {
+    "num": 50,
+    "q": "A country invests in regulations, training, and infrastructure to support both modern biotechnology and traditional practices. From a sustainability perspective, how should this strategy be evaluated?",
+    "A": "Wasteful, since only one technology is needed",
+    "B": "Positive, because it balances innovation, safety, and inclusiveness for different types of farmers",
+    "C": "Harmful, as it limits choices",
+    "D": "Neutral, with no real impact (OK)",
+    "ans": "B"
+  }
+];
 
-
+// ==== Firebase imports and setup ====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { 
   getFirestore, collection, getDocs, doc, setDoc, serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// Firebase init
 const firebaseConfig = {
   apiKey: "AIzaSyB-idZOq8h9sVttNdzXE2t8FMoYI_snq7g",
   authDomain: "kuya-quiz-100.firebaseapp.com",
@@ -123,13 +686,14 @@ try {
   console.warn("Anonymous auth failed:", e);
 }
 
-// Exam constants
+// ==== Exam constants ====
 const EXAM_DOC_ID = "KzRzubb5df1TV1gL2RuF";
 const COURSE_TITLE = document.title;
 const EXAM_SECONDS = 60 * 60;
-const CLOSING_TIME = new Date(2025, 10, 21, 23, 59, 59); // month 10 = November
+// JS Date: year, monthIndex (0=Jan), day, hour, min, sec
+const CLOSING_TIME = new Date(2025, 10, 21, 23, 59, 59); // 21 Nov 2025, 11:59:59 PM
 
-// DOM
+// ==== DOM references ====
 const stage0 = document.getElementById("stage0");
 const stage1 = document.getElementById("stage1");
 const stage2 = document.getElementById("stage2");
@@ -164,7 +728,7 @@ const rSection = document.getElementById("rSection");
 const rScore = document.getElementById("rScore");
 const rNote = document.getElementById("rNote");
 
-// State
+// ==== State ====
 let currentIndex = 0;
 let selectedAnswers = new Array(QUESTIONS.length).fill(null);
 let secondsLeft = EXAM_SECONDS;
@@ -174,7 +738,7 @@ let studentName = "";
 let studentSection = "";
 let submitting = false;
 
-// Helpers
+// ==== Helper functions ====
 function isClosed() {
   const now = new Date();
   return now > CLOSING_TIME;
@@ -198,15 +762,15 @@ function renderQuestion() {
   qtext.textContent = q.q;
   choicesEl.innerHTML = "";
   const letters = ["A","B","C","D"];
-  for (let i = 0; i < letters.length; i++) {
-    const l = letters[i];
+  letters.forEach(l => {
     const checked = selectedAnswers[currentIndex] === l ? " checked" : "";
-    const html = '<label class="choice">' +
-                 '<input type="radio" name="opt" value="' + l + '"' + checked + '>' +
-                 '<b>' + l + '.</b> ' + q[l] +
-                 '</label>';
+    const html = `
+      <label class="choice">
+        <input type="radio" name="opt" value="${l}"${checked}>
+        <div><b>${l}.</b> ${q[l]}</div>
+      </label>`;
     choicesEl.insertAdjacentHTML("beforeend", html);
-  }
+  });
   pillCount.textContent = "Q: " + (currentIndex + 1) + " / " + QUESTIONS.length;
   if (QUESTIONS.length > 1) {
     const pct = (currentIndex / (QUESTIONS.length - 1)) * 100;
@@ -214,7 +778,7 @@ function renderQuestion() {
   } else {
     barEl.style.width = "0%";
   }
-  btnPrev.disabled = currentIndex === 0;
+  btnPrev.disabled = (currentIndex === 0);
   if (currentIndex === QUESTIONS.length - 1) {
     btnNext.classList.add("hidden");
     btnSubmit.classList.remove("hidden");
@@ -236,7 +800,7 @@ function startTimer() {
   if (timerId) {
     clearInterval(timerId);
   }
-  timerId = setInterval(function() {
+  timerId = setInterval(() => {
     secondsLeft -= 1;
     if (secondsLeft < 0) secondsLeft = 0;
     const m = Math.floor(secondsLeft / 60);
@@ -253,11 +817,17 @@ function startTimer() {
 
 async function getAttemptCountForStudent(id) {
   try {
-    const attemptsCol = collection(db, "finals-exam", EXAM_DOC_ID, "submissions", id, "attempts");
+    const attemptsCol = collection(
+      db,
+      "finals-exam", EXAM_DOC_ID,
+      "submissions", id,
+      "attempts"
+    );
     const snap = await getDocs(attemptsCol);
     return snap.size;
   } catch (e) {
     console.warn("Attempt count check failed:", e);
+    // If attempt check fails due to permissions, treat as 0 attempts
     return 0;
   }
 }
@@ -289,8 +859,8 @@ function buildAnswerSheet() {
   return out;
 }
 
-// Main actions
-btnUnderstand.addEventListener("click", function() {
+// ==== Button handlers ====
+btnUnderstand.addEventListener("click", () => {
   if (isClosed()) {
     showErr(errStage0, "This exam is already closed. Deadline was 11:59:59 PM on 21 November 2025.");
     return;
@@ -299,11 +869,11 @@ btnUnderstand.addEventListener("click", function() {
   switchStage(stage1);
 });
 
-btnBack.addEventListener("click", function() {
+btnBack.addEventListener("click", () => {
   switchStage(stage0);
 });
 
-btnStart.addEventListener("click", async function() {
+btnStart.addEventListener("click", async () => {
   if (isClosed()) {
     showErr(errStage1, "This exam is already closed. Deadline was 11:59:59 PM on 21 November 2025.");
     return;
@@ -322,7 +892,7 @@ btnStart.addEventListener("click", async function() {
 
   studentName = nm;
   studentSection = sec;
-  // studentId from name+section+course
+
   let raw = nm + "|||" + sec + "|||" + COURSE_TITLE;
   let base;
   try {
@@ -351,7 +921,7 @@ btnStart.addEventListener("click", async function() {
   startTimer();
 });
 
-btnNext.addEventListener("click", function() {
+btnNext.addEventListener("click", () => {
   const sel = getSelectedValue();
   if (!sel) {
     showErr(errStage2, "Please choose an answer before proceeding.");
@@ -364,7 +934,7 @@ btnNext.addEventListener("click", function() {
   }
 });
 
-btnPrev.addEventListener("click", function() {
+btnPrev.addEventListener("click", () => {
   const sel = getSelectedValue();
   if (sel) {
     selectedAnswers[currentIndex] = sel;
@@ -375,7 +945,7 @@ btnPrev.addEventListener("click", function() {
   }
 });
 
-btnSubmit.addEventListener("click", function() {
+btnSubmit.addEventListener("click", () => {
   const sel = getSelectedValue();
   if (!sel) {
     showErr(errStage2, "Please choose an answer before submitting.");
@@ -385,6 +955,7 @@ btnSubmit.addEventListener("click", function() {
   submitExam(false);
 });
 
+// ==== Submission logic ====
 async function submitExam(autoSubmitted) {
   if (submitting) return;
   submitting = true;
@@ -412,10 +983,21 @@ async function submitExam(autoSubmitted) {
   };
 
   try {
-    const attemptsCol = collection(db, "finals-exam", EXAM_DOC_ID, "submissions", studentId, "attempts");
+    const attemptsCol = collection(
+      db,
+      "finals-exam", EXAM_DOC_ID,
+      "submissions", studentId,
+      "attempts"
+    );
     const snap = await getDocs(attemptsCol);
     const attemptNum = snap.size + 1;
-    const ref = doc(db, "finals-exam", EXAM_DOC_ID, "submissions", studentId, "attempts", "attempt" + attemptNum);
+    const ref = doc(
+      db,
+      "finals-exam", EXAM_DOC_ID,
+      "submissions", studentId,
+      "attempts",
+      "attempt" + attemptNum
+    );
     await setDoc(ref, payload);
 
     alert("your exam has been submitted");
@@ -426,11 +1008,9 @@ async function submitExam(autoSubmitted) {
   } catch (e) {
     console.error("Submission failed:", e);
     alert("submission fail, please try again");
-    // re-enable submit so they can retry
     btnSubmit.disabled = false;
     btnNext.disabled = false;
-    btnPrev.disabled = currentIndex === 0;
-    // restart timer (optional); here we keep remaining seconds
+    btnPrev.disabled = (currentIndex === 0);
     if (!timerId && secondsLeft > 0) {
       startTimer();
     }
@@ -450,6 +1030,7 @@ async function autoSubmit() {
   await submitExam(true);
 }
 
+// Initial meta text
 pillTimer.textContent = "Time: 60:00";
 pillCount.textContent = "Q: — / " + QUESTIONS.length;
 </script>
